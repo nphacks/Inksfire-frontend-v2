@@ -5,7 +5,7 @@
   </div>
 
   <!-- Create Project Button -->
-  <button class="create-project-btn" routerLink="/"></button>
+  <button class="create-project-btn" (click)="showCreatePopup = true"></button>
 
   <!-- Create Project Popup -->
   <div class="create-project-popup" [class.show]="showCreatePopup">
@@ -67,7 +67,7 @@
           </div>
           
           <button class="btn btn-secondary" (click)="generateIdeas()" style="width: 100%; margin-bottom: 1rem;">
-            ✨ Generate 3 AI Ideas
+            Generate 3 AI Ideas
           </button>
           
           <div class="ai-suggestions" *ngIf="generatedIdeas.length > 0">
@@ -115,7 +115,7 @@
           </div>
           
           <button class="btn btn-secondary" style="width: 100%; margin-bottom: 1rem;">
-            🎯 Generate Smart Prompts
+            Generate Smart Prompts
           </button>
           
           <div class="ai-suggestions" *ngIf="generatedPrompts.length > 0">
