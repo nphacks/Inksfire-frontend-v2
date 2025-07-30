@@ -1,60 +1,170 @@
 <div class="dashboard-page">
-    <button>Create Project</button>
-    <div class="create-project-popup">
-        <!-- Step 1 -->
-        <div class="create-project-step-1">
-            <p>What do you want to do?</p>
-            <select [(ngModel)]="selectedAction">
-                <option [value]="'plan'">Let's plan</option>
-                <option [value]="'start'">Start writing</option>
-            </select>
-        </div>
-        <!-- Step 2 -->
-        <div class="create-project-step-2">
-            <input type="text" placeholder="Name for project" [(ngModel)]="newProject.name" />
-            <input type="text" placeholder="Author of the project" [(ngModel)]="newProject.author" />
-            <textarea placeholder="Idea for the project" [(ngModel)]="newProject.idea"></textarea>
-            <button (click)="generateIdeas">Generate 3 ideas with AI</button>
-            @for (idea of generatedIdeas; track idea) {
-                <div>{{idea}}</div>
-            }
-            <button (click)="createProject()">Create Project</button>
-        </div>
-        <!-- Step 3 -->
-        <div class="create-project-step-3">
-            <select id="genreSelect" [(ngModel)]="selectedGenres" multiple>
-                <option *ngFor="let genre of story_genres" [value]="genre">{{ genre }}</option>
-            </select>
+  <div class="dashboard-header">
+    <h1>The Story Universe</h1>
+    <p>Where imagination meets the page</p>
+  </div>
 
-            <select id="typeSelect" [(ngModel)]="selectedStoryType">
-                <option *ngFor="let type of story_types" [value]="type">{{ type }}</option>
-            </select>
-            <textarea placeholder="Author of the project" [(ngModel)]="newProjectPrompt"></textarea>
-            <button>Generate 3 prompts with AI</button>
-            @for (prompt of generatedPrompts; track prompt) {
-                <div>{{prompt}}</div>
-            }
-            <button (click)="submitPrompt()">Submit</button>
-        </div>
-    </div>
-    <div class="search-project">
-        <input type="search" placholder="Search for projects"/>
-        <select><option selected>Any</option><option>Tags</option></select>
-    </div>
-    <div class="project-list">
-        @for (project of filteredProjects; track project.name) {
-            <div class="project" (click)="selectProject(project.project_id)">
-                <div>{{project.name}}</div>
-                <div>{{project.author}}</div>
-                @for (genre of project.genres; track genre) {
-                    <span>{{genre}}</span>
-                }
-                @for (type of project.story_types; track type) {
-                    <span>{{type}}</span>
-                }
+  <!-- Create Project Button -->
+  <button class="create-project-btn" (click)="showCreatePopup = true"></button>
+
+  <!-- Create Project Popup -->
+  <div class="create-project-popup" [class.show]="showCreatePopup">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h2>Create Project</h2>
+        <button class="close-btn" (click)="closePopup()">&times;</button>
+      </div>
+      <div class="popup-body">
+        <!-- Step 1: Choose Action -->
+        <div class="create-project-step" [class.active]="currentStep === 1">
+          <div class="step-header">
+            <div class="step-indicator">
+              <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1"></div>
+              <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2"></div>
+              <div class="step" [class.active]="currentStep === 3"></div>
             </div>
-        } @empty {
-            <p>No projects found. Create your first project to get started.</p>
-        }
+            <h3>What's your approach?</h3>
+          </div>
+          
+          <div class="form-group">
+            <label>Choose your creative journey</label>
+            <select [(ngModel)]="selectedAction">
+              <option value="plan">Let's plan first - Structure before writing</option>
+              <option value="start">Start writing - Dive right into creativity</option>
+            </select>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="btn btn-secondary" (click)="closePopup()">Cancel</button>
+            <button class="btn btn-primary" (click)="nextStep()">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Basic Info -->
+        <div class="create-project-step" [class.active]="currentStep === 2">
+          <div class="step-header">
+            <div class="step-indicator">
+              <div class="step completed"></div>
+              <div class="step active"></div>
+              <div class="step"></div>
+            </div>
+            <h3>Tell us about your story</h3>
+          </div>
+          
+          <div class="form-group">
+            <label>Project Name</label>
+            <input type="text" placeholder="Enter a captivating title..." [(ngModel)]="newProject.name" />
+          </div>
+          
+          <div class="form-group">
+            <label>Author</label>
+            <input type="text" placeholder="Your name" [(ngModel)]="newProject.author" />
+          </div>
+          
+          <div class="form-group">
+            <label>Story Idea</label>
+            <textarea placeholder="Describe your story concept, characters, or theme..." [(ngModel)]="newProject.idea"></textarea>
+          </div>
+          
+          <button class="btn btn-secondary" (click)="generateIdeas()" style="width: 100%; margin-bottom: 1rem;">
+            Generate 3 AI Ideas
+          </button>
+          
+          <div class="ai-suggestions" *ngIf="generatedIdeas.length > 0">
+            <div class="suggestion-item" *ngFor="let idea of generatedIdeas" (click)="selectIdea(idea)">
+              <p>{{ idea }}</p>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="btn btn-secondary" (click)="prevStep()">Back</button>
+            <button class="btn btn-primary" (click)="nextStep()" [disabled]="!newProject.name || !newProject.author || !newProject.idea">
+              Continue
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Genre & Details -->
+        <div class="create-project-step" [class.active]="currentStep === 3">
+          <div class="step-header">
+            <div class="step-indicator">
+              <div class="step completed"></div>
+              <div class="step completed"></div>
+              <div class="step active"></div>
+            </div>
+            <h3>Define your story's DNA</h3>
+          </div>
+          
+          <div class="form-group">
+            <label>Genres (Hold Ctrl/Cmd for multiple)</label>
+            <select [(ngModel)]="selectedGenres" multiple>
+              <option *ngFor="let genre of story_genres" [value]="genre">{{ genre }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Story Type</label>
+            <select [(ngModel)]="selectedStoryType">
+              <option *ngFor="let type of story_types" [value]="type">{{ type }}</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Additional Details (Optional)</label>
+            <textarea placeholder="Any specific themes, target audience, or creative direction..." [(ngModel)]="newProjectPrompt"></textarea>
+          </div>
+          
+          <button class="btn btn-secondary" style="width: 100%; margin-bottom: 1rem;">
+            Generate Smart Prompts
+          </button>
+          
+          <div class="ai-suggestions" *ngIf="generatedPrompts.length > 0">
+            <div class="suggestion-item" *ngFor="let prompt of generatedPrompts" (click)="selectPrompt(prompt)">
+              <p>{{ prompt }}</p>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="btn btn-secondary" (click)="prevStep()">Back</button>
+            <button class="btn btn-primary" (click)="createProject()">
+              {{ selectedAction === 'plan' ? 'Start Planning' : 'Start Writing' }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Search Section -->
+  <div class="search-project">
+    <div class="search-header">
+      <h3>Find Your Stories</h3>
+    </div>
+    <div class="search-controls">
+      <input type="search" placeholder="Search projects by name, idea, or theme..." />
+      <select>
+        <option selected>All Projects</option>
+        <option>By Tags</option>
+        <option>By Genre</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Project List -->
+  <div class="project-list">
+    <div class="project" *ngFor="let project of filteredProjects" (click)="selectProject(project.project_id)">
+      <div class="project-title">{{ project.name }}</div>
+      <div class="project-author">by {{ project.author }}</div>
+      <div class="project-tags">
+        <span *ngFor="let genre of project.genres">{{ genre }}</span>
+        <span *ngFor="let type of project.story_types">{{ type }}</span>
+      </div>
+    </div>
+    
+    <div class="empty-state" *ngIf="filteredProjects.length === 0">
+      <div class="empty-icon">📚</div>
+      <h3>No stories yet</h3>
+      <p>Create your first project to begin your writing journey</p>
+    </div>
+  </div>
 </div>
