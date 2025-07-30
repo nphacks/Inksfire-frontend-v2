@@ -16,6 +16,8 @@ export class DashboardComponent implements OnInit {
   filteredProjects: any[] = [];
   selectedAction: string = 'plan';
   generatedIdeas: string[] = []
+  showCreatePopup = false;
+  currentStep = 1;
   newProject = {
     name: '',
     author: '',
@@ -160,5 +162,44 @@ export class DashboardComponent implements OnInit {
         console.error('Error fetching project:', err);
       }
     })
+  }
+
+  closePopup() {
+    this.showCreatePopup = false;
+    this.currentStep = 1;
+    this.resetForm();
+  }
+
+  nextStep() {
+    if (this.currentStep < 3) {
+      this.currentStep++;
+    }
+  }
+
+  prevStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
+  selectIdea(idea: string) {
+    this.newProject.idea = idea;
+  }
+
+  selectPrompt(prompt: string) {
+    this.newProjectPrompt = prompt;
+  }
+
+  resetForm() {
+    this.newProject = {
+      name: '',
+      author: '',
+      idea: ''
+    };
+    this.selectedGenres = ['Any'];
+    this.selectedStoryType = 'Any';
+    this.newProjectPrompt = '';
+    this.generatedIdeas = [];
+    this.generatedPrompts = [];
   }
 }
