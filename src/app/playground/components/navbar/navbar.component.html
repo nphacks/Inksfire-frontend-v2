@@ -1,0 +1,66 @@
+<nav class="navbar">
+  <div class="nav-links">
+    <div class="nav-item">
+      <a routerLink="playground" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+        <mat-icon>dashboard</mat-icon>
+        <div class="tooltip">Dashboard</div>
+      </a>
+    </div>
+     <div class="nav-item" *ngIf="selectedProject">
+      <a routerLink="story-writing" routerLinkActive="active" class="nav-link">
+        <mat-icon>auto_stories</mat-icon>
+        <div class="tooltip">Story Writing</div>
+      </a>
+    </div>
+    <div class="nav-item">
+      <a routerLink="analysis-compare" routerLinkActive="active" class="nav-link">
+        <mat-icon>analytics</mat-icon>
+        <div class="tooltip">Analysis</div>
+      </a>
+    </div>
+    <div class="nav-item" *ngIf="selectedProject">
+      <a routerLink="character-analysis" routerLinkActive="active" class="nav-link">
+        <mat-icon>group</mat-icon>
+        <div class="tooltip">Character Analysis</div>
+      </a>
+    </div>
+    <div class="nav-item" *ngIf="selectedProject">
+      <a routerLink="script-writing" routerLinkActive="active" class="nav-link">
+        <mat-icon>script</mat-icon>
+        <div class="tooltip">Script Writing</div>
+      </a>
+    </div>
+    <div class="nav-item" *ngIf="selectedProject">
+      <a routerLink="story-mapping" routerLinkActive="active" class="nav-link">
+        <mat-icon>graph_3</mat-icon>
+        <div class="tooltip">Story Mapping</div>
+      </a>
+    </div>
+  </div>
+  
+  <div class="theme-controls">
+    <button class="theme-btn" (click)="toggleDarkLight()">
+      <mat-icon *ngIf="!isDarkMode">wb_sunny</mat-icon>
+      <mat-icon *ngIf="isDarkMode">nights_stay</mat-icon>
+      <div class="tooltip">Toggle Dark/Light</div>
+    </button>
+    
+    <div class="theme-selector">
+      <button class="theme-btn" (click)="toggleThemeSelector()">
+        <mat-icon>contrast</mat-icon>
+        <div class="tooltip">Select Theme</div>
+      </button>
+      
+      <div class="theme-dropdown" [class.show]="showThemeSelector">
+        <button 
+          *ngFor="let theme of themes; let i = index" 
+          class="theme-option"
+          [class.active]="currentTheme === theme"
+          (click)="selectTheme(theme)"
+          [style.background]="getThemePreview(i + 1)">
+          {{theme | themeName}}
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

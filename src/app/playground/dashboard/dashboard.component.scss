@@ -1,0 +1,10 @@
+.dashboard-page {
+    height: 100vh;
+    width: 100%;
+    display: grid;
+    grid-template-rows: 150px 100px 100px auto;
+    grid-template-areas:    '.'
+                            'create-project'
+                            'search-project'
+                            'project-list';
+}

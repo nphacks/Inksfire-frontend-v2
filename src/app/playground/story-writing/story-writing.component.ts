@@ -1,0 +1,202 @@
+import { Component, OnInit } from '@angular/core';
+import { ProjectDataService } from '../services/project-data.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProjectService } from '../services/project.service';
+import { TagsService } from '../services/tags.service';
+import { StoryService } from '../services/story.service';
+
+@Component({
+  selector: 'app-story-writing',
+  templateUrl: './story-writing.component.html',
+  styleUrl: './story-writing.component.scss'
+})
+export class StoryWritingComponent implements OnInit {
+
+  projectId = ''
+  isProjectNew = false
+  isProjectPlan = false
+  projectData: any = {}
+  searchedTags: { name: string; id?: string, tag_id?: string, type?: string }[] = [];
+  searchedEntities = []
+  searchedTagType = []
+  tagSearchText = ''
+  selectedTagDemographics: any
+  aggregatedTagDemographics: any
+  stories: { name: string; writing?: string }[] = [];
+  activeStory: any;
+  storyStructures = [
+    'Three-Act Structure',
+    'The Hero\'s Journey',
+    'Save the Cat',
+    'The Story Circle',
+    'Kishōtenketsu',
+    'Freytag\'s Pyramid',
+    'Seven-Point Story Structure',
+    '22-Step Structure',
+    'Pixar Story Structure',
+    'Dramatica Theory',
+    'Hollywood Beat Sheet'
+  ];
+  timelines = ['Linear', 'Non-linear'];
+  createStory = {
+    name: 'Untitled',
+    structure: this.storyStructures[0],
+    timeline: this.timelines[0]
+  };
+  saveTimeout: any;
+
+  constructor(
+    private projectService: ProjectService,
+    private projectDataService: ProjectDataService,
+    private storyService: StoryService,
+    private tagService: TagsService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.projectId = params['project_id']; 
+      this.isProjectNew = params['is_new']; 
+      this.isProjectPlan = params['is_plan']; 
+
+      if (!this.projectId) { 
+        this.router.navigate(['/playground']);
+        return;
+      }
+
+      this.projectDataService.project$.subscribe({
+        next: (res: any) => {
+          if (res == null) {
+            this.projectService.fetchProjectData(this.projectId).subscribe({
+              next: (res: any) => {
+                console.log(res)
+                this.projectDataService.setProject(res.project);
+                this.projectData = res.project;
+                this.stories = this.projectData.stories
+              },
+              error: (err) => {
+                console.error('Error fetching project:', err);
+              }
+            });
+          } else {
+            this.projectData = res;
+          }
+        }
+      });
+    });
+  }
+
+  selectedStory(tab: any) {
+    this.activeStory = tab;
+  }
+
+  createStoryData(form: any) {
+    console.log('Story Submitted:', this.createStory);
+    this.storyService.createStory(this.createStory).subscribe({
+      next: (res: any) => {
+        console.log(res)
+        this.projectDataService.setProject(res.project)
+      },
+      error: (err) => {
+        console.error('Error fetching project:', err);
+      }
+    })
+  }
+
+  onWritingChange() {
+    clearTimeout(this.saveTimeout);
+    this.saveTimeout = setTimeout(() => {
+      this.saveDraft();
+    }, 2000); // 2 seconds of inactivity
+  }
+
+  saveDraft() {
+    console.log('Auto-saving draft:', this.activeStory.writing);
+    this.storyService.saveStory({
+      project_id: this.projectId,
+      story_id: this.activeStory.story_id,
+      save_type: 'draft',
+      writing: this.activeStory.writing
+    }).subscribe({
+      next: (res: any) => {
+        console.log(res)
+        this.projectDataService.setProject(res.project)
+      },
+      error: (err) => {
+        console.error('Error saving story:', err);
+      }
+    })
+  }
+
+  submitDraft() {
+    this.storyService.saveStory({
+      project_id: this.projectId,
+      story_id: this.activeStory.story_id,
+      save_type: 'save',
+      writing: this.activeStory.writing
+    }).subscribe({
+      next: (res: any) => {
+        console.log(res)
+        this.projectDataService.setProject(res.project)
+      },
+      error: (err) => {
+        console.error('Error saving story:', err);
+      }
+    })
+  }
+
+  searchTags() {
+    this.tagService.searchForTags({
+      searchString: this.tagSearchText ? this.tagSearchText : '',
+      idea: this.projectData.idea ? this.projectData.idea : '',
+      genres: this.projectData.genres ? this.projectData.genres.join(", ") : '',
+      story_types: this.projectData.story_types ? this.projectData.story_types.join(", ") : '', 
+      target_age: this.projectData.target_age ? this.projectData.target_age.join(", ") : '',
+      target_gender: this.projectData.target_gender ? JSON.stringify(this.projectData.target_gender) : ''
+    }).subscribe({
+      next: (res: any) => {
+        console.log(res)
+        this.searchedTags = res.data.tags
+        this.searchedEntities = res.data.entities_used
+        this.searchedTagType = res.data.search_type
+      },
+      error: (err) => {
+        console.error('Error saving story:', err);
+      }
+    })
+  }
+
+  selectedTag(tag: any) {
+    console.log(tag)
+    tag = {
+      "type": "urn:tag:keyword:media",
+      "tag_id": "urn:tag:keyword:media:river_adventure",
+      "name": "river adventure"
+    }
+    let tag_id = tag.id || tag.tag_id;
+    this.tagService.getTagDemographics(tag_id).subscribe({
+      next: (res: any) => {
+        console.log(res)
+        this.selectedTagDemographics = res.demographics
+      },
+      error: (err) => {
+        console.error('Error saving story:', err);
+      }
+    })
+  }
+
+  removeSelectedTag(tag:any) {
+    this.selectedTagDemographics = this.selectedTagDemographics.filter(
+      (t: any) => t.name !== tag.name
+    );
+    this.projectService.updateProject({ project_id: this.projectId, selected_tags: this.selectedTagDemographics }).subscribe({
+       next: (res: any) => {
+        console.log(res)
+      },
+      error: (err) => {
+        console.error('Error saving story:', err);
+      }
+    })
+  }
+}

@@ -1,0 +1,98 @@
+<div>
+    <!-- Story writing -->
+    <button>Create Story</button>
+    <form #storyForm="ngForm" (ngSubmit)="createStoryData(storyForm)">
+        <input type="text" name="name" [(ngModel)]="createStory.name" required />
+        <br />
+        <select name="structure" [(ngModel)]="createStory.structure" required>
+            <option *ngFor="let s of storyStructures" [value]="s">{{ s }}</option>
+        </select>
+        <label>Timeline:</label>
+        <select name="timeline" [(ngModel)]="createStory.timeline" required>
+            <option *ngFor="let t of timelines" [value]="t">{{ t }}</option>
+        </select>
+        <button type="submit" [disabled]="storyForm.invalid">Submit</button>
+    </form>
+    <div class="stories" *ngIf="(stories?.length ?? 0) > 0">
+        <div class="story-tab-buttons">
+            @for (tab of stories; track tab?.name) {
+                <button (click)="selectedStory(tab)">{{ tab?.name }}</button>
+            }
+        </div>
+
+        <div class="story-writing" *ngIf="activeStory">
+            <div class="writing-room">
+            <textarea
+                [(ngModel)]="activeStory.writing"
+                (ngModelChange)="onWritingChange()"
+                placeholder="Write your story">
+            </textarea>
+            </div>
+            <div class="writing-commands">
+            <button (click)="saveDraft()">Save Draft</button>
+            <button>Submit Draft</button>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br><br>
+<hr>
+<div>
+    <h3>Tags</h3>
+    <div class="current-demographics"></div>
+    <div class="selected-demographics"></div>
+    <div class="tag-searching">
+         <div class="search-for-tags">
+            <input type="search" [(ngModel)]="tagSearchText" (keyup.enter)="searchTags()" />
+            <button (click)="searchTags()">Search</button>
+        </div>
+        <div class="searched-tags">
+            <div class="tags-list" *ngIf="(searchedTags?.length ?? 0) > 0">
+                @for (tag of searchedTags; track tag?.name) {
+                    <button (click)="selectedTag(tag)">{{ tag?.name }}</button>
+                }
+            </div>
+            <button (click)="selectedTag('')">Test tag Demographics</button>
+        </div>
+        <div class="selected-tag-demographics">
+            @for (tag of selectedTagDemographics; track tag?.name) {
+                <div>{{ tag?.name }} <button (click)="removeSelectedTag(tag)">Remove</button></div>
+            }
+        </div>
+    </div>
+</div>
+<br><br><br>
+<hr>
+<div>
+    <h3>AI Help</h3>
+</div>
+<br><br><br>
+<hr>
+<div>
+    <h3>Project Information</h3>
+    <div>Idea: {{projectData.idea}}</div>
+    <div>Genres:</div>
+    <ul>
+        @for (genre of projectData.genres; track genre) {
+            <li>{{genre}}</li>
+        }
+    </ul>
+    <div>Story Types:</div>
+    <ul>
+        @for (type of projectData.story_types; track type) {
+            <li>{{type}}</li>
+        } 
+    </ul>
+    <div>Target Demographics:</div>
+    <b>Age: </b>
+    <ul>
+        @for (age of projectData.target_demographics?.age; track age) {
+            <span>{{age}}</span> &nbsp;&nbsp;
+        } 
+    </ul>
+    <b>Gender: </b>
+    <ul>
+        <span>{{projectData.target_demographics?.gender.male}}</span> &nbsp;&nbsp;
+        <span>{{projectData.target_demographics?.gender.female}}</span> &nbsp;&nbsp;
+    </ul>
+</div>

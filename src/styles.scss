@@ -1,1 +1,78 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$frontend-primary: mat.define-palette(mat.$indigo-palette);
+$frontend-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$frontend-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$frontend-theme: mat.define-light-theme((
+  color: (
+    primary: $frontend-primary,
+    accent: $frontend-accent,
+    warn: $frontend-warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($frontend-theme);
+
 /* You can add global styles to this file, and also import other style files */
+* {
+  padding: 0;
+  margin: 0;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.theme_1 {
+    --color1: #303130;
+    --color2: #f9ffff;
+    --color3: #330099;
+    --color4: #daa5c5;
+}
+
+.theme_2 {
+    --color1: #311007;
+    --color2: #fdf6f2;
+    --color3: #330099;
+    --color4: #0072b6;
+}
+
+.theme_3 {
+    --color1: #2f3138;
+    --color2: #f5faf7;
+    --color3: #330099;
+    --color4: #f63437;
+}
+
+.theme_4 {
+    --color1: #0a2343;
+    --color2: #ffffff;
+    --color3: #330099;
+    --color4: #30ab77;
+}
+
+.theme_5 {
+    --color1: #020414;
+    --color2: #eceae5;
+    --color3: #309ab5;
+    --color4: #b46b12;
+}
