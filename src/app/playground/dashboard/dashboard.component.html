@@ -2,10 +2,11 @@
   <div class="dashboard-header">
     <h1>Your Story Universe</h1>
     <p>Where imagination meets the page</p>
+    <button class="landing-page-btn" routerLink="/">Back to Landing</button>
   </div>
 
   <!-- Create Project Button -->
-  <button class="create-project-btn" (click)="showCreatePopup = true">Create Project</button>
+  <button class="create-project-btn" routerLink="/">Create Project</button>
 
   <!-- Create Project Popup -->
   <div class="create-project-popup" [class.show]="showCreatePopup">
