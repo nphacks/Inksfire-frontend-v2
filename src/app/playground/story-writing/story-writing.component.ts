@@ -60,6 +60,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   showAiAssistant = false;
   aiAssistantPosition = { top: 0, left: 0 };
   showTagsPopup = false
+  selectedDemographicsType = 'target';
   private subs = new Subscription();
 
   constructor(
