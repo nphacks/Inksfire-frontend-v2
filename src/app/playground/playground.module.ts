@@ -13,6 +13,7 @@ import { LoadingComponent } from './components/loading/loading.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeNamePipe } from './pipes/theme-name.pipe';
+import { TagTypePipe } from './pipes/tag-type.pipe';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
@@ -27,7 +28,8 @@ import { FormsModule } from '@angular/forms';
     NavbarComponent,
     LoadingComponent,
     DashboardComponent,
-    ThemeNamePipe
+    ThemeNamePipe,
+    TagTypePipe
   ],
   imports: [
     CommonModule,

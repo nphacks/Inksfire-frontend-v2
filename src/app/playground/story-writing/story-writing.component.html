@@ -238,7 +238,8 @@
         </button>
       </div>
       <div class="popup-body">
-        <div class="tag-search">
+        <!-- Top Row: Search Bar -->
+        <div class="popup-row search-row">
           <div class="search-input-group">
             <input 
               type="search" 
@@ -252,24 +253,100 @@
           </div>
         </div>
 
-        <div class="searched-tags" *ngIf="(searchedTags?.length ?? 0) > 0">
-          <h4>Suggested Tags</h4>
-          <div class="tags-grid">
+        <!-- Second Row: Heatmap + Selected Tags + Save Button -->
+        <div class="popup-row heatmap-row" *ngIf="selectedTags.length > 0">
+          <div class="heatmap-section">
+            <h4>Combined Demographics ({{ selectedTags.length }} tags)</h4>
+            <div class="heatmap-container">
+              <div class="heatmap-grid">
+                <div class="heatmap-subsection">
+                  <h5>Age Groups</h5>
+                  <div class="heatmap-bars">
+                    <div 
+                      *ngFor="let item of getAggregatedAgeData()" 
+                      class="heatmap-bar"
+                      [class.high-positive]="item.value >= 0.15"
+                      [class.medium-positive]="item.value >= 0.05 && item.value < 0.15"
+                      [class.high-negative]="item.value <= -0.15"
+                      [class.medium-negative]="item.value <= -0.05 && item.value > -0.15">
+                      <div class="bar-label">{{ item.label }}</div>
+                      <div class="bar-container">
+                        <div 
+                          class="bar-fill"
+                          [class.positive]="item.value >= 0"
+                          [class.negative]="item.value < 0"
+                          [style.width.%]="Math.abs(item.value) * 100">
+                        </div>
+                      </div>
+                      <div 
+                        class="bar-value"
+                        [class.positive]="item.value >= 0"
+                        [class.negative]="item.value < 0">
+                        {{ (item.value * 100).toFixed(0) }}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="heatmap-subsection">
+                  <h5>Gender</h5>
+                  <div class="heatmap-bars">
+                    <div 
+                      *ngFor="let item of getAggregatedGenderData()" 
+                      class="heatmap-bar"
+                      [class.high-positive]="item.value >= 0.15"
+                      [class.medium-positive]="item.value >= 0.05 && item.value < 0.15"
+                      [class.high-negative]="item.value <= -0.15"
+                      [class.medium-negative]="item.value <= -0.05 && item.value > -0.15">
+                      <div class="bar-label">{{ item.label }}</div>
+                      <div class="bar-container">
+                        <div 
+                          class="bar-fill"
+                          [class.positive]="item.value >= 0"
+                          [class.negative]="item.value < 0"
+                          [style.width.%]="Math.abs(item.value) * 100">
+                        </div>
+                      </div>
+                      <div 
+                        class="bar-value"
+                        [class.positive]="item.value >= 0"
+                        [class.negative]="item.value < 0">
+                        {{ (item.value * 100).toFixed(0) }}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class="selected-tags-section">
+            <h4>Selected Tags ({{ selectedTags.length }}/15)</h4>
+            <div class="selected-tags">
+              <div 
+                *ngFor="let tag of selectedTags; trackBy: trackByTagName" 
+                class="selected-tag">
+                <span>{{ tag?.name }}</span>
+                <button (click)="removeSelectedTag(tag)" class="remove-tag">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </div>
+            
             <button 
-              *ngFor="let tag of searchedTags; trackBy: trackByTagName" 
-              (click)="selectTag(tag)"
-              class="tag-item"
-              [class.selected]="isTagSelected(tag)">
-              {{ tag?.name }}
+              (click)="saveDemographics()" 
+              class="save-demographics-btn"
+              [disabled]="selectedTags.length === 0">
+              Save as Target Demographics
             </button>
           </div>
         </div>
-
-        <!-- Single Tag Demographics Display -->
-        <div class="demographics-visualization" *ngIf="currentTagDemographics">
-          <h4>Tag Demographics</h4>
-          <div class="single-tag-demographics">
-            <div class="tag-name">{{ currentTagDemographics.tagName }}</div>
+        
+        <!-- Third Row: Individual Tag Demographics -->
+        <div class="popup-row individual-demographics-row" *ngIf="currentTagDemographics">
+          <div class="individual-demographics">
+            <h4>{{ currentTagDemographics.tagName }} Demographics</h4>
             <div class="demographics-charts">
               <div class="chart-section">
                 <h5>Age Distribution</h5>
@@ -319,78 +396,19 @@
             </div>
           </div>
         </div>
-      </div>
-      </div>
-    </div>
-    
-    <!-- Right Column: Selected Tags and Heatmap -->
-    <div class="right-column">
-      <div class="selected-tags-section" *ngIf="selectedTags.length > 0">
-        <h4>Selected Tags ({{ selectedTags.length }})</h4>
-        <div class="selected-tags">
-          <div 
-            *ngFor="let tag of selectedTags; trackBy: trackByTagName" 
-            class="selected-tag">
-            <span>{{ tag?.name }}</span>
-            <button (click)="removeSelectedTag(tag)" class="remove-tag">
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
-        </div>
         
-        <button 
-          (click)="saveDemographics()" 
-          class="save-demographics-btn"
-          [disabled]="selectedTags.length === 0">
-          Save as Target Demographics
-        </button>
-      </div>
-
-      <!-- Aggregated Heatmap -->
-      <div class="aggregated-heatmap" *ngIf="selectedTags.length > 1">
-        <h4>Combined Demographics Heatmap</h4>
-        <div class="heatmap-container">
-          <div class="heatmap-section">
-            <h5>Age Groups</h5>
-            <div class="heatmap-grid">
-              <div 
-                *ngFor="let item of getAggregatedAgeData()" 
-                class="heatmap-cell"
-                [class.high-positive]="item.value >= 0.15"
-                [class.medium-positive]="item.value >= 0.05 && item.value < 0.15"
-                [class.high-negative]="item.value <= -0.15"
-                [class.medium-negative]="item.value <= -0.05 && item.value > -0.15">
-                <div class="cell-label">{{ item.label }}</div>
-                <div 
-                  class="cell-value"
-                  [class.positive]="item.value >= 0"
-                  [class.negative]="item.value < 0"
-                  [class.neutral]="item.value === 0">
-                  {{ (item.value * 100).toFixed(0) }}%
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="heatmap-section">
-            <h5>Gender</h5>
-            <div class="heatmap-grid">
-              <div 
-                *ngFor="let item of getAggregatedGenderData()" 
-                class="heatmap-cell"
-                [class.high-positive]="item.value >= 0.15"
-                [class.medium-positive]="item.value >= 0.05 && item.value < 0.15"
-                [class.high-negative]="item.value <= -0.15"
-                [class.medium-negative]="item.value <= -0.05 && item.value > -0.15">
-                <div class="cell-label">{{ item.label }}</div>
-                <div 
-                  class="cell-value"
-                  [class.positive]="item.value >= 0"
-                  [class.negative]="item.value < 0"
-                  [class.neutral]="item.value === 0">
-                  {{ (item.value * 100).toFixed(0) }}%
-                </div>
-              </div>
+        <!-- Fourth Row: Tags List -->
+        <div class="popup-row tags-list-row" *ngIf="(searchedTags?.length ?? 0) > 0">
+          <h4>Suggested Tags</h4>
+          <div class="tags-grid">
+            <div 
+              *ngFor="let tag of searchedTags; trackBy: trackByTagName" 
+              (click)="selectTag(tag)"
+              class="tag-item"
+              [class.selected]="isTagSelected(tag)"
+              [class.disabled]="!isTagSelected(tag) && selectedTags.length >= 15">
+              <div class="tag-name">{{ tag?.name }}</div>
+              <div class="tag-type" *ngIf="tag?.type">{{ tag.type | tagType }}</div>
             </div>
           </div>
         </div>
