@@ -56,6 +56,8 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   };
   saveTimeout: any;
   showCreateForm = false
+  showAiAssistant = false;
+  aiAssistantPosition = { top: 0, left: 0 };
   private subs = new Subscription();
 
   constructor(
