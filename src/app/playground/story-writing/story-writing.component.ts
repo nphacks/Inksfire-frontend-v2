@@ -10,11 +10,17 @@ import { ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
+interface StoryBeat {
+  title?: string;
+  name?: string;
+  content?: string;
+  description?: string;
+}
+
 @Component({
   selector: 'app-story-writing',
   templateUrl: './story-writing.component.html',
-  styleUrl: './story-writing.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './story-writing.component.scss'
 })
 export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
 

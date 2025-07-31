@@ -3,6 +3,20 @@ import { ProjectDataService } from '../services/project-data.service';
 import { Subscription } from 'rxjs';
 import * as d3 from 'd3';
 
+interface Character {
+  name: string;
+  description?: string;
+  notes?: string;
+  actors?: any[];
+}
+
+interface StoryBeat {
+  title?: string;
+  name?: string;
+  content?: string;
+  description?: string;
+}
+
 @Component({
   selector: 'app-character-mapping',
   templateUrl: './character-mapping.component.html',
