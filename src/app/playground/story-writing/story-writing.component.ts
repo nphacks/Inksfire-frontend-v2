@@ -19,7 +19,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   isProjectPlan = false
   projectData: any = {}
   isDrawerOpen = false;
-  activeHelperTab = 'tags';
+  activeHelperTab = 'demographics';
   helperTabs = [
     { id: 'demographics', name: 'Demographics', icon: 'people' },
     { id: 'ai', name: 'AI Help', icon: 'psychology' },
@@ -351,7 +351,23 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
     };
     
     console.log('Saving demographics:', demographicsData);
-    // TODO: Make actual service call when ready
+    this.subs.add(
+      this.projectService.updateProject({ 
+        project_id: this.projectId, 
+        "target_demographics": demographicsData.target_demographics,
+        "selected_tags": demographicsData.selected_tags
+      }).subscribe({
+        next: (res: any) => {
+          console.log(res)
+          // If res.status_code == 200
+          // Snackbar for update "Target Demographics saved" 
+        },
+        error(err) {
+            console.error(err)
+            // Snackbar for update "Target Demographics could not be saved" 
+        }
+      })
+    )
   }
 
   onDocumentChange(event: any) {
