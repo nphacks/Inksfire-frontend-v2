@@ -53,16 +53,16 @@
         </form>
       </div>
     </div>
-
+    
     <!-- Story Tabs and Writing Area -->
     <div class="stories-section" *ngIf="(stories?.length ?? 0) > 0">
       <div class="story-tabs">
         <button 
-          *ngFor="let tab of stories; trackBy: trackByStoryName" 
+          *ngFor="let tab of stories; trackBy: trackByStoryTitle" 
           (click)="selectedStory(tab)"
-          [class.active]="activeStory?.name === tab?.name"
+          [class.active]="activeStory?.title === tab?.title"
           class="story-tab">
-          {{ tab?.name }}
+          {{ tab?.title }}
         </button>
       </div>
 

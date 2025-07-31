@@ -31,7 +31,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   tagSearchText = ''
   selectedTagDemographics: any
   aggregatedTagDemographics: any
-  stories: { name: string; writing?: string }[] = [];
+  stories: { title: string; writing?: string,  }[] = [];
   activeStory: any;
   storyStructures = [
     'Any',
@@ -108,7 +108,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
     this.showCreateForm = !this.showCreateForm;
   }
 
-  trackByStoryName(index: number, story: any): string {
+  trackByStoryTitle(index: number, story: any): string {
     return story?.name || index;
   }
 
