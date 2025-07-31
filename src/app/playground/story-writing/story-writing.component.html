@@ -3,16 +3,27 @@
   <div class="story-writing-main" [class.drawer-open]="isDrawerOpen">
     <div class="story-header">
       <h1>Story Writing</h1>
-      <button class="drawer-toggle" (click)="toggleDrawer()">
-        <mat-icon>{{ isDrawerOpen ? 'chevron_right' : 'help_outline' }}</mat-icon>
-        <span>{{ isDrawerOpen ? 'Hide Helpers' : 'Show Helpers' }}</span>
-      </button>
+      <div class="header-actions">
+        <button class="add-story-btn" (click)="toggleCreateForm()">
+          <mat-icon>add</mat-icon>
+          <span>Add Story</span>
+        </button>
+        <button class="drawer-toggle" (click)="toggleDrawer()">
+          <mat-icon>{{ isDrawerOpen ? 'chevron_right' : 'help_outline' }}</mat-icon>
+          <span>{{ isDrawerOpen ? 'Hide Helpers' : 'Show Helpers' }}</span>
+        </button>
+      </div>
     </div>
 
-    <!-- Create Story Form -->
-    <div class="create-story-section" *ngIf="!activeStory">
+    <!-- Collapsible Create Story Form -->
+    <div class="create-story-section" [class.expanded]="showCreateForm">
       <div class="create-story-card">
-        <h2>Create New Story</h2>
+        <div class="form-header">
+          <h3>Create New Story</h3>
+          <button class="close-form-btn" (click)="toggleCreateForm()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
         <form #storyForm="ngForm" (ngSubmit)="createStoryData(storyForm)" class="story-form">
           <div class="form-group">
             <label>Story Name</label>
