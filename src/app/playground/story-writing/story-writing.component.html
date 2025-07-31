@@ -92,20 +92,20 @@
         <div class="writing-area">
           <div class="document-container">
             <div class="document-page">
-              <div 
+              <div
                 class="story-document"
                 contenteditable="true"
                 (input)="onDocumentChange($event)"
                 (mouseup)="onTextSelection($event)"
                 (keyup)="onTextSelection($event)"
-                [innerHTML]="activeStory.writing || ''"
                 #documentEditor>
-              </div>
+                </div>
+
               
               <!-- AI Assistant Popup -->
               <div 
                 class="ai-assistant-popup" 
-                [class.hidden]="!showAiAssistant"
+                *ngIf="showAiAssistant"
                 [style.top.px]="aiAssistantPosition.top"
                 [style.left.px]="aiAssistantPosition.left">
                 <div class="ai-assistant-content">

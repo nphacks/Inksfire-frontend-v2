@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ProjectDataService } from '../services/project-data.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../services/project.service';
@@ -16,7 +16,7 @@ import { debounceTime } from 'rxjs/operators';
   styleUrl: './story-writing.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StoryWritingComponent implements OnInit, OnDestroy {
+export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   projectId = ''
   isProjectNew = false
@@ -71,6 +71,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   aiHelpResponse = '';
   private subs = new Subscription();
   private writingChange$ = new Subject<string>();
+  @ViewChild('documentEditor') editor!: ElementRef;
 
   constructor(
     private projectService: ProjectService,
@@ -119,6 +120,13 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
       })
     );
   }
+
+  ngAfterViewInit() {
+    if (this.activeStory?.writing) {
+      this.editor.nativeElement.innerHTML = this.activeStory.writing;
+    }
+  }
+
 
   toggleDrawer() {
     this.isDrawerOpen = !this.isDrawerOpen;
