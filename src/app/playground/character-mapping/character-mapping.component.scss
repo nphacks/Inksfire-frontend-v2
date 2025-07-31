@@ -104,82 +104,95 @@
 }
 
 // Characters Tab Styles
-.characters-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  
-  .character-card {
+.characters-table {
+  .table-header {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 2fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
     background: #f8f9ff;
-    border: 1px solid #e0e7ff;
-    border-radius: 12px;
-    padding: 1.5rem;
+    border-bottom: 2px solid #e0e7ff;
+    font-weight: 600;
+    color: var(--color1);
+    
+    .header-cell {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+  
+  .table-row {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 2fr 1fr;
+    gap: 1rem;
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid #e0e7ff;
     transition: all 0.3s ease;
     
     &:hover {
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      border-color: #330099;
+      background: #f8f9ff;
     }
     
-    .character-header {
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .table-cell {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      
-      h3 {
-        margin: 0;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    
+    .character-cell {
+      h4 {
+        margin: 0 0 0.5rem 0;
         color: var(--color1);
-        font-size: 1.3rem;
+        font-size: 1.1rem;
         font-weight: 500;
       }
-      
-      .actor-options-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: linear-gradient(135deg, #330099, #4a0db8);
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 0.9rem;
-        
-        &:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 2px 8px rgba(51, 0, 153, 0.3);
-        }
-        
-        mat-icon {
-          font-size: 16px;
-          width: 16px;
-          height: 16px;
-        }
-      }
-    }
-    
-    .character-description {
-      margin-bottom: 1rem;
       
       p {
-        color: var(--color1);
-        line-height: 1.6;
         margin: 0;
-        font-size: 1rem;
+        color: #666;
+        line-height: 1.5;
+        font-size: 0.9rem;
       }
     }
     
-    .character-notes {
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: var(--color1);
-        font-weight: 500;
-        font-size: 0.9rem;
+    .actors-cell {
+      .actors-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        
+        .actor-name {
+          background: linear-gradient(135deg, #330099, #4a0db8);
+          color: white;
+          padding: 0.4rem 0.8rem;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-align: center;
+          
+          &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(51, 0, 153, 0.3);
+          }
+        }
       }
       
+      .no-actors {
+        color: #999;
+        font-style: italic;
+        font-size: 0.9rem;
+        text-align: center;
+        padding: 1rem 0;
+      }
+    }
+    
+    .notes-cell {
       textarea {
         width: 100%;
         padding: 0.75rem;
@@ -200,6 +213,38 @@
         &::placeholder {
           color: #999;
           font-style: italic;
+        }
+      }
+    }
+    
+    .actions-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      .actor-options-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #330099, #4a0db8);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(51, 0, 153, 0.3);
+        }
+        
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
         }
       }
     }

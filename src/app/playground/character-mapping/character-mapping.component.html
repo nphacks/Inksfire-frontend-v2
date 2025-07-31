@@ -32,27 +32,47 @@
 
     <!-- Characters Tab -->
     <div class="tab-content" *ngIf="activeTab === 'characters'">
-      <div class="characters-list">
-        <div class="character-card" *ngFor="let character of characterList; let i = index">
-          <div class="character-header">
-            <h3>{{ character.name }}</h3>
-            <button class="actor-options-btn" (click)="openActorOptions(character)">
-              <mat-icon>person_search</mat-icon>
-              Actor Options
-            </button>
-          </div>
-          
-          <div class="character-description">
+      <div class="characters-table">
+        <div class="table-header">
+          <div class="header-cell character-col">Character</div>
+          <div class="header-cell actors-col">Actors</div>
+          <div class="header-cell notes-col">Notes</div>
+          <div class="header-cell actions-col">Actions</div>
+        </div>
+        
+        <div class="table-row" *ngFor="let character of characterList; let i = index">
+          <div class="table-cell character-cell">
+            <h4>{{ character.name }}</h4>
             <p>{{ character.description }}</p>
           </div>
           
-          <div class="character-notes">
-            <label>Notes:</label>
+          <div class="table-cell actors-cell">
+            <div class="actors-list" *ngIf="character.actors && character.actors.length > 0">
+              <span 
+                *ngFor="let actor of character.actors" 
+                class="actor-name"
+                (click)="showActorInfo(actor)">
+                {{ actor.name }}
+              </span>
+            </div>
+            <div class="no-actors" *ngIf="!character.actors || character.actors.length === 0">
+              No actors assigned
+            </div>
+          </div>
+          
+          <div class="table-cell notes-cell">
             <textarea 
               [(ngModel)]="character.notes" 
               (input)="saveCharacterNotes(character)"
               placeholder="Add your notes about this character..."
               rows="3"></textarea>
+          </div>
+          
+          <div class="table-cell actions-cell">
+            <button class="actor-options-btn" (click)="openActorOptions(character)">
+              <mat-icon>person_search</mat-icon>
+              Actor Options
+            </button>
           </div>
         </div>
         
@@ -98,30 +118,62 @@
   </div>
 </div>
 
-<!-- Actor Options Popup -->
-<div class="actor-options-popup" [class.show]="showActorOptions">
-  <div class="popup-content">
-    <div class="popup-header">
+<!-- Actor Options Bottom Drawer -->
+<div class="bottom-drawer" [class.open]="showActorOptions">
+  <div class="drawer-content">
+    <div class="drawer-header">
       <h3>Actor Options for {{ selectedCharacter?.name }}</h3>
-      <button class="close-popup" (click)="closeActorOptions()">
+      <button class="close-drawer" (click)="closeActorOptions()">
         <mat-icon>close</mat-icon>
       </button>
     </div>
-    <div class="popup-body">
-      <div class="actor-suggestions">
-        <p>Actor suggestions and casting options will be implemented here.</p>
-        <div class="placeholder-content">
-          <div class="suggestion-item">
-            <strong>Suggested Actors:</strong>
-            <p>Based on character description and demographics</p>
+    <div class="drawer-body">
+      <div class="character-context">
+        <h4>Character Context</h4>
+        <div class="context-content">
+          <p>{{ selectedCharacter?.description }}</p>
+        </div>
+      </div>
+      
+      <div class="search-section">
+        <h4>Search for Actors</h4>
+        <div class="search-input-group">
+          <input 
+            type="text" 
+            [(ngModel)]="actorSearchQuery"
+            placeholder="Enter search criteria (e.g., 'male actor 30s action movies', 'blonde actress comedy')"
+            class="actor-search-input" />
+          <button (click)="searchActors()" class="search-btn">
+            <mat-icon>search</mat-icon>
+            Search
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Actor Info Bottom Drawer -->
+<div class="bottom-drawer" [class.open]="showActorInfo">
+  <div class="drawer-content">
+    <div class="drawer-header">
+      <h3>{{ selectedActor?.name }}</h3>
+      <button class="close-drawer" (click)="closeActorInfo()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div class="actor-info-content">
+        <p>Actor information will be loaded from backend when clicked.</p>
+        <div class="placeholder-info">
+          <div class="info-item">
+            <strong>Age:</strong> {{ selectedActor?.age || 'N/A' }}
           </div>
-          <div class="suggestion-item">
-            <strong>Physical Traits:</strong>
-            <p>Age range, appearance, and casting requirements</p>
+          <div class="info-item">
+            <strong>Known For:</strong> {{ selectedActor?.knownFor || 'N/A' }}
           </div>
-          <div class="suggestion-item">
-            <strong>Voice Characteristics:</strong>
-            <p>Tone, accent, and vocal requirements</p>
+          <div class="info-item">
+            <strong>Bio:</strong> {{ selectedActor?.bio || 'Actor information will be fetched from backend' }}
           </div>
         </div>
       </div>
