@@ -56,16 +56,27 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngAfterViewInit(): void {
-    if (this.activeTab === 'map' && this.characterMap.length > 0) {
-      setTimeout(() => this.initializeD3Chart(), 100);
-    }
+    // Initialize D3 chart when view is ready
+    setTimeout(() => {
+      if (this.activeTab === 'map') {
+        this.initializeD3Chart();
+      }
+    }, 100);
   }
 
   onStoryChange() {
     if (this.stories.length > 0 && this.selectedStoryIndex >= 0) {
       this.selectedStory = this.stories[this.selectedStoryIndex];
-      this.characterList = this.selectedStory?.character_mapping?.characters || [];
-      this.characterMap = this.selectedStory?.character_mapping?.relationships || [];
+      
+      // Handle different possible data structures
+      if (this.selectedStory?.character_mapping) {
+        this.characterList = this.selectedStory.character_mapping.characters || [];
+        this.characterMap = this.selectedStory.character_mapping.relationships || [];
+      } else {
+        // Fallback: extract characters from story_beats if character_mapping doesn't exist
+        this.characterList = this.extractCharactersFromBeats();
+        this.characterMap = [];
+      }
       
       // Initialize notes for characters if not present
       this.characterList.forEach((character: any) => {
@@ -75,9 +86,34 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
       });
       
       // Reinitialize D3 chart if on map tab
-      if (this.activeTab === 'map' && this.characterMap.length > 0) {
+      if (this.activeTab === 'map') {
         setTimeout(() => this.initializeD3Chart(), 100);
       }
+    }
+  }
+
+  extractCharactersFromBeats(): any[] {
+    if (!this.selectedStory?.story_beats) return [];
+    
+    const charactersSet = new Set<string>();
+    this.selectedStory.story_beats.forEach((beat: any) => {
+      if (beat.characters && Array.isArray(beat.characters)) {
+        beat.characters.forEach((char: string) => charactersSet.add(char));
+      }
+    });
+    
+    return Array.from(charactersSet).map(name => ({
+      name,
+      description: `Character from story beats`,
+      notes: '',
+      actors: []
+    }));
+  }
+
+  switchTab(tab: string) {
+    this.activeTab = tab;
+    if (tab === 'map') {
+      setTimeout(() => this.initializeD3Chart(), 100);
     }
   }
 
@@ -126,7 +162,21 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   initializeD3Chart() {
-    if (!this.d3Container || !this.characterMap.length) return;
+    if (!this.d3Container?.nativeElement) {
+      console.log('D3 container not ready');
+      return;
+    }
+    
+    // If no character relationships, create a simple character display
+    if (!this.characterMap.length && this.characterList.length > 0) {
+      this.createSimpleCharacterDisplay();
+      return;
+    }
+    
+    if (!this.characterMap.length) {
+      console.log('No character data available');
+      return;
+    }
     
     // Clear any existing chart
     d3.select(this.d3Container.nativeElement).selectAll("*").remove();
@@ -241,6 +291,61 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
     });
   }
   
+  createSimpleCharacterDisplay() {
+    const container = this.d3Container.nativeElement;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    
+    // Clear any existing chart
+    d3.select(container).selectAll("*").remove();
+    
+    // Create SVG
+    this.svg = d3.select(container)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
+    
+    // Create simple circular layout for characters
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = Math.min(width, height) / 3;
+    
+    const characterNodes = this.characterList.map((char, index) => {
+      const angle = (index / this.characterList.length) * 2 * Math.PI;
+      return {
+        id: char.name,
+        x: centerX + radius * Math.cos(angle),
+        y: centerY + radius * Math.sin(angle),
+        description: char.description
+      };
+    });
+    
+    // Create character nodes
+    const node = this.svg.append('g')
+      .attr('class', 'nodes')
+      .selectAll('g')
+      .data(characterNodes)
+      .enter().append('g')
+      .attr('class', 'node')
+      .attr('transform', (d: any) => `translate(${d.x},${d.y})`);
+    
+    // Add circles
+    node.append('circle')
+      .attr('r', 40)
+      .attr('fill', '#330099')
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 3);
+    
+    // Add character names
+    node.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '0.3em')
+      .attr('font-size', '12px')
+      .attr('fill', 'white')
+      .attr('font-weight', 'bold')
+      .text((d: any) => d.id.length > 10 ? d.id.substring(0, 10) + '...' : d.id);
+  }
+
   prepareNodesAndLinks() {
     const characters = new Set<string>();
     this.characterMap.forEach(rel => {
