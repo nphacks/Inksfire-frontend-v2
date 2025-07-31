@@ -69,6 +69,14 @@
       <div class="story-editor" *ngIf="activeStory">
         <div class="editor-header">
           <h3>{{ activeStory.name }}</h3>
+          <div class="story-info">
+            <span class="info-item">
+              <strong>Structure:</strong> {{ activeStory.structure }}
+            </span>
+            <span class="info-item">
+              <strong>Timeline:</strong> {{ activeStory.timeline }}
+            </span>
+          </div>
           <div class="editor-actions">
             <button (click)="saveDraft()" class="save-btn">
               <mat-icon>save</mat-icon>
@@ -82,13 +90,44 @@
         </div>
         
         <div class="writing-area">
-          <textarea
-            [(ngModel)]="activeStory.writing"
-            (ngModelChange)="onWritingChange()"
-            placeholder="Begin your story here..."
-            class="story-textarea">
-          </textarea>
+          <div class="document-container">
+            <div class="document-page">
+              <div 
+                class="story-document"
+                contenteditable="true"
+                (input)="onDocumentChange($event)"
+                (mouseup)="onTextSelection($event)"
+                (keyup)="onTextSelection($event)"
+                [innerHTML]="activeStory.writing || ''"
+                #documentEditor>
+              </div>
+              
+              <!-- AI Assistant Popup -->
+              <div 
+                class="ai-assistant-popup" 
+                [class.show]="showAiAssistant"
+                [style.top.px]="aiAssistantPosition.top"
+                [style.left.px]="aiAssistantPosition.left">
+                <div class="ai-assistant-content">
+                  <h4>AI Assistant</h4>
+                  <p>AI writing assistance features will appear here.</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div class="empty-stories-state" *ngIf="(stories?.length ?? 0) === 0">
+      <div class="empty-content">
+        <h3>No stories for project</h3>
+        <p>Create new story to begin your writing journey</p>
+        <button class="create-first-story-btn" (click)="toggleCreateForm()">
+          <mat-icon>add</mat-icon>
+          Create Your First Story
+        </button>
       </div>
     </div>
   </div>

@@ -243,6 +243,28 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
     )
   }
 
+  onDocumentChange(event: any) {
+    this.activeStory.writing = event.target.innerHTML;
+    this.onWritingChange();
+  }
+
+  onTextSelection(event: any) {
+    const selection = window.getSelection();
+    if (selection && selection.toString().trim().length > 0) {
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      
+      this.aiAssistantPosition = {
+        top: rect.bottom + window.scrollY + 10,
+        left: rect.left + window.scrollX
+      };
+      
+      this.showAiAssistant = true;
+    } else {
+      this.showAiAssistant = false;
+    }
+  }
+
   ngOnDestroy() {
     this.subs.unsubscribe();
   }
