@@ -119,19 +119,19 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
       })
     ).subscribe()
     );
-    this.subs.add(
-      this.writingChange$.pipe(debounceTime(2000)).subscribe(() => {
-        this.saveDraft();
-      })
-    );
   }
 
   ngAfterViewInit() {
-    if (this.activeStory?.writing) {
-      this.editor.nativeElement.innerHTML = this.activeStory.writing;
-    }
+    setTimeout(() => {
+      if (this.activeStory?.writing) {
+        this.editor.nativeElement.innerHTML = this.activeStory.writing;
+      }
+    });
   }
 
+  onDocumentChange(event: any) {
+    this.activeStory.writing = event.target.innerHTML;
+  }
 
   toggleDrawer() {
     this.isDrawerOpen = !this.isDrawerOpen;
@@ -191,11 +191,12 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
       this.storyService.saveStory({
         project_id: this.projectId,
         story_id: this.activeStory.story_id,
-        save_type: 'draft',
+        save_type: 'save',
         writing: this.activeStory.writing
       }).subscribe({
         next: (res: any) => {
           console.log(res)
+          // Snackbar is res.status_code == 200 to show "Draft Saved"
           this.projectDataService.setProject(res.project);
           this.projectData = res.project;
           this.stories = this.projectData.stories || [];
@@ -212,11 +213,12 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
       this.storyService.saveStory({
         project_id: this.projectId,
         story_id: this.activeStory.story_id,
-        save_type: 'save',
+        save_type: 'submit',
         writing: this.activeStory.writing
       }).subscribe({
         next: (res: any) => {
           console.log(res)
+          // Snackbar is res.status_code == 200 to show "Draft Submited"
           this.projectDataService.setProject(res.project);
           this.projectData = res.project;
           this.stories = this.projectData.stories || [];
@@ -443,11 +445,6 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       })
     )
-  }
-
-  onDocumentChange(event: any) {
-    this.activeStory.writing = event.target.innerHTML;
-    this.onWritingChange();
   }
 
   onTextSelection(event: any) {

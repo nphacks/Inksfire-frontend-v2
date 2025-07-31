@@ -81,6 +81,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.projectService.fetchProjectData(projectId).subscribe({
         next: (res: any) => {
           console.log('Selected project response', res)
+          localStorage.setItem("project_id", projectId)
           this.projectDataService.setProject(res.project);
           this.router.navigate(['/playground/story-writing'], { 
             queryParams: { 
@@ -103,6 +104,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.projectService.createProject(this.newProject).subscribe({
         next: (res: any) => {
           let projectId = res.project.project_id
+          localStorage.setItem("project_id", projectId)
           this.projectDataService.setProject(res.project);
           if (res.status_code === 200 && this.selectedAction === 'start') {
             this.closePopup();
