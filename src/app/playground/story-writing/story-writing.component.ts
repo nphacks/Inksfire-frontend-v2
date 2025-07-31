@@ -32,7 +32,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   selectedTags: any[] = []
   currentTagDemographics: any = null
   Math = Math
-  stories: { title: string; writing?: string,  }[] = [];
+  stories: { title: string; writing?: string }[] = [];
   activeStory: any;
   storyStructures = [
     'Any',
@@ -473,7 +473,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
     `;
   }
 
-  getTargetAgeData() {
-    if (!this.activeStory?.target_demographics?.age) return [];
-    
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
 }
