@@ -22,8 +22,8 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
   selectedStory: any = null;
   activeTab: string = 'characters';
   selectedHistoryType: string = 'type';
-  showActorOptions: boolean = false;
-  showActorInfo: boolean = false;
+  isActorOptionsVisible: boolean = false;
+  isActorInfoVisible: boolean = false;
   selectedCharacter: any = null;
   selectedActor: any = null;
   actorSearchQuery: string = '';
@@ -96,25 +96,25 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
 
   openActorOptions(character: any) {
     this.selectedCharacter = character;
-    this.showActorOptions = true;
-    this.showActorInfo = false;
+    this.isActorOptionsVisible = true;
+    this.isActorInfoVisible = false;
   }
 
   closeActorOptions() {
-    this.showActorOptions = false;
+    this.isActorOptionsVisible = false;
     this.selectedCharacter = null;
     this.actorSearchQuery = '';
   }
 
-  showActorInfo(actor: any) {
+  showActorInfoDrawer(actor: any) {
     this.selectedActor = actor;
-    this.showActorInfo = true;
-    this.showActorOptions = false;
+    this.isActorInfoVisible = true;
+    this.isActorOptionsVisible = false;
     console.log('Selected actor:', actor);
   }
 
   closeActorInfo() {
-    this.showActorInfo = false;
+    this.isActorInfoVisible = false;
     this.selectedActor = null;
   }
 

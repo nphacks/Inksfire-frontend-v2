@@ -51,7 +51,7 @@
               <span 
                 *ngFor="let actor of character.actors" 
                 class="actor-name"
-                (click)="showActorInfo(actor)">
+                (click)="showActorInfoDrawer(actor)">
                 {{ actor.name }}
               </span>
             </div>
@@ -119,7 +119,7 @@
 </div>
 
 <!-- Actor Options Bottom Drawer -->
-<div class="bottom-drawer" [class.open]="showActorOptions">
+<div class="bottom-drawer" [class.open]="isActorOptionsVisible">
   <div class="drawer-content">
     <div class="drawer-header">
       <h3>Actor Options for {{ selectedCharacter?.name }}</h3>
@@ -154,7 +154,7 @@
 </div>
 
 <!-- Actor Info Bottom Drawer -->
-<div class="bottom-drawer" [class.open]="showActorInfo">
+<div class="bottom-drawer" [class.open]="isActorInfoVisible">
   <div class="drawer-content">
     <div class="drawer-header">
       <h3>{{ selectedActor?.name }}</h3>
