@@ -85,18 +85,3 @@ export class CharacterMappingComponent implements OnInit {
     this.subs.unsubscribe();
   }
 }
-      next: (res: any) => {
-        this.projectData = res
-        this.stories = res.stories
-        this.characterList = res.stories[0].character_mapping.characters
-        this.characterMap = res.stories[0].character_mapping.relationships
-        console.log(this.stories)
-        console.log(this.characterList, this.characterMap)
-      },
-      error(err) {
-          console.error(err)
-      },
-    })
-  }
-
-}
