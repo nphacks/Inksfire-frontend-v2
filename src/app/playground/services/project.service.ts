@@ -29,10 +29,10 @@ export class ProjectService {
   }
 
   createProject(data: CreateProjectRequest) {
-    return this.http.post(`${environment.apiUrl}/project/create-project"`, data);   
+    return this.http.post(`${environment.apiUrl}/project-setup/create-project`, data);   
   }
 
   updateProject(data: any) {
-    return this.http.post(`${environment.apiUrl}/project/create-project"`, data);   
+    return this.http.post(`${environment.apiUrl}/project-setup/update-project`, data);   
   }
 }

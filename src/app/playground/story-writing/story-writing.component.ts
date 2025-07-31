@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ProjectDataService } from '../services/project-data.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../services/project.service';
 import { TagsService } from '../services/tags.service';
 import { StoryService } from '../services/story.service';
+import { Subscription } from 'rxjs';
+import { filter, switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-story-writing',
   templateUrl: './story-writing.component.html',
   styleUrl: './story-writing.component.scss'
 })
-export class StoryWritingComponent implements OnInit {
+export class StoryWritingComponent implements OnInit, OnDestroy {
 
   projectId = ''
   isProjectNew = false
@@ -44,6 +46,7 @@ export class StoryWritingComponent implements OnInit {
     timeline: this.timelines[0]
   };
   saveTimeout: any;
+  private subs = new Subscription();
 
   constructor(
     private projectService: ProjectService,
@@ -55,36 +58,35 @@ export class StoryWritingComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.projectId = params['project_id']; 
-      this.isProjectNew = params['is_new']; 
-      this.isProjectPlan = params['is_plan']; 
+    this.subs.add(
+    this.route.queryParams.pipe(
+      tap(params => {
+        this.projectId = params['project_id']; 
+        this.isProjectNew = params['is_new']; 
+        this.isProjectPlan = params['is_plan']; 
 
-      if (!this.projectId) { 
-        this.router.navigate(['/playground']);
-        return;
-      }
-
-      this.projectDataService.project$.subscribe({
-        next: (res: any) => {
-          if (res == null) {
-            this.projectService.fetchProjectData(this.projectId).subscribe({
-              next: (res: any) => {
-                console.log(res)
-                this.projectDataService.setProject(res.project);
-                this.projectData = res.project;
-                this.stories = this.projectData.stories
-              },
-              error: (err) => {
-                console.error('Error fetching project:', err);
-              }
-            });
-          } else {
-            this.projectData = res;
-          }
+        if (!this.projectId) {
+          this.router.navigate(['/playground']);
         }
-      });
-    });
+      }),
+      filter(() => !!this.projectId),
+      switchMap(() => this.projectDataService.project$),
+      switchMap(res => {
+        if (res == null) {
+          return this.projectService.fetchProjectData(this.projectId).pipe(
+            tap((response: any) => {
+              this.projectDataService.setProject(response.project);
+              this.projectData = response.project;
+              this.stories = this.projectData.stories;
+            })
+          );
+        } else {
+          this.projectData = res;
+          return []; // No further observable needed
+        }
+      })
+    ).subscribe()
+  );
   }
 
   selectedStory(tab: any) {
@@ -93,15 +95,17 @@ export class StoryWritingComponent implements OnInit {
 
   createStoryData(form: any) {
     console.log('Story Submitted:', this.createStory);
-    this.storyService.createStory(this.createStory).subscribe({
-      next: (res: any) => {
-        console.log(res)
-        this.projectDataService.setProject(res.project)
-      },
-      error: (err) => {
-        console.error('Error fetching project:', err);
-      }
-    })
+    this.subs.add(
+      this.storyService.createStory(this.createStory).subscribe({
+        next: (res: any) => {
+          console.log(res)
+          this.projectDataService.setProject(res.project)
+        },
+        error: (err) => {
+          console.error('Error fetching project:', err);
+        }
+      })
+    )
   }
 
   onWritingChange() {
@@ -113,58 +117,64 @@ export class StoryWritingComponent implements OnInit {
 
   saveDraft() {
     console.log('Auto-saving draft:', this.activeStory.writing);
-    this.storyService.saveStory({
-      project_id: this.projectId,
-      story_id: this.activeStory.story_id,
-      save_type: 'draft',
-      writing: this.activeStory.writing
-    }).subscribe({
-      next: (res: any) => {
-        console.log(res)
-        this.projectDataService.setProject(res.project)
-      },
-      error: (err) => {
-        console.error('Error saving story:', err);
-      }
-    })
+    this.subs.add(
+      this.storyService.saveStory({
+        project_id: this.projectId,
+        story_id: this.activeStory.story_id,
+        save_type: 'draft',
+        writing: this.activeStory.writing
+      }).subscribe({
+        next: (res: any) => {
+          console.log(res)
+          this.projectDataService.setProject(res.project)
+        },
+        error: (err) => {
+          console.error('Error saving story:', err);
+        }
+      })
+    )
   }
 
   submitDraft() {
-    this.storyService.saveStory({
-      project_id: this.projectId,
-      story_id: this.activeStory.story_id,
-      save_type: 'save',
-      writing: this.activeStory.writing
-    }).subscribe({
-      next: (res: any) => {
-        console.log(res)
-        this.projectDataService.setProject(res.project)
-      },
-      error: (err) => {
-        console.error('Error saving story:', err);
-      }
-    })
+    this.subs.add(
+      this.storyService.saveStory({
+        project_id: this.projectId,
+        story_id: this.activeStory.story_id,
+        save_type: 'save',
+        writing: this.activeStory.writing
+      }).subscribe({
+        next: (res: any) => {
+          console.log(res)
+          this.projectDataService.setProject(res.project)
+        },
+        error: (err) => {
+          console.error('Error saving story:', err);
+        }
+      })
+    )
   }
 
   searchTags() {
-    this.tagService.searchForTags({
-      searchString: this.tagSearchText ? this.tagSearchText : '',
-      idea: this.projectData.idea ? this.projectData.idea : '',
-      genres: this.projectData.genres ? this.projectData.genres.join(", ") : '',
-      story_types: this.projectData.story_types ? this.projectData.story_types.join(", ") : '', 
-      target_age: this.projectData.target_age ? this.projectData.target_age.join(", ") : '',
-      target_gender: this.projectData.target_gender ? JSON.stringify(this.projectData.target_gender) : ''
-    }).subscribe({
-      next: (res: any) => {
-        console.log(res)
-        this.searchedTags = res.data.tags
-        this.searchedEntities = res.data.entities_used
-        this.searchedTagType = res.data.search_type
-      },
-      error: (err) => {
-        console.error('Error saving story:', err);
-      }
-    })
+    this.subs.add(
+      this.tagService.searchForTags({
+        searchString: this.tagSearchText ? this.tagSearchText : '',
+        idea: this.projectData.idea ? this.projectData.idea : '',
+        genres: this.projectData.genres ? this.projectData.genres.join(", ") : '',
+        story_types: this.projectData.story_types ? this.projectData.story_types.join(", ") : '', 
+        target_age: this.projectData.target_age ? this.projectData.target_age.join(", ") : '',
+        target_gender: this.projectData.target_gender ? JSON.stringify(this.projectData.target_gender) : ''
+      }).subscribe({
+        next: (res: any) => {
+          console.log(res)
+          this.searchedTags = res.data.tags
+          this.searchedEntities = res.data.entities_used
+          this.searchedTagType = res.data.search_type
+        },
+        error: (err) => {
+          console.error('Error saving story:', err);
+        }
+      })
+    )
   }
 
   selectedTag(tag: any) {
@@ -175,28 +185,36 @@ export class StoryWritingComponent implements OnInit {
       "name": "river adventure"
     }
     let tag_id = tag.id || tag.tag_id;
-    this.tagService.getTagDemographics(tag_id).subscribe({
-      next: (res: any) => {
-        console.log(res)
-        this.selectedTagDemographics = res.demographics
-      },
-      error: (err) => {
-        console.error('Error saving story:', err);
-      }
-    })
+    this.subs.add(
+      this.tagService.getTagDemographics(tag_id).subscribe({
+        next: (res: any) => {
+          console.log(res)
+          this.selectedTagDemographics = res.demographics
+        },
+        error: (err) => {
+          console.error('Error saving story:', err);
+        }
+      })
+    )
   }
 
   removeSelectedTag(tag:any) {
     this.selectedTagDemographics = this.selectedTagDemographics.filter(
       (t: any) => t.name !== tag.name
     );
-    this.projectService.updateProject({ project_id: this.projectId, selected_tags: this.selectedTagDemographics }).subscribe({
-       next: (res: any) => {
-        console.log(res)
-      },
-      error: (err) => {
-        console.error('Error saving story:', err);
-      }
-    })
+    this.subs.add(
+      this.projectService.updateProject({ project_id: this.projectId, selected_tags: this.selectedTagDemographics }).subscribe({
+        next: (res: any) => {
+          console.log(res)
+        },
+        error: (err) => {
+          console.error('Error saving story:', err);
+        }
+      })
+    )
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
   }
 }

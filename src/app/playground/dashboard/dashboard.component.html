@@ -1,7 +1,7 @@
 <div class="dashboard-page">
   <div class="dashboard-header">
     <h1>The Story Universe</h1>
-    <p>Where imagination meets the page</p>
+    <p>Where imagination meets the page Hello</p>
   </div>
 
   <!-- Create Project Button -->
@@ -97,14 +97,14 @@
           
           <div class="form-group">
             <label>Genres (Hold Ctrl/Cmd for multiple)</label>
-            <select [(ngModel)]="selectedGenres" multiple>
+            <select [(ngModel)]="newProject.genres" multiple>
               <option *ngFor="let genre of story_genres" [value]="genre">{{ genre }}</option>
             </select>
           </div>
 
           <div class="form-group">
             <label>Story Type</label>
-            <select [(ngModel)]="selectedStoryType">
+            <select [(ngModel)]="newProject.story_types">
               <option *ngFor="let type of story_types" [value]="type">{{ type }}</option>
             </select>
           </div>
@@ -157,7 +157,7 @@
       <div class="project-author">by {{ project.author }}</div>
       <div class="project-tags">
         <span *ngFor="let genre of project.genres">{{ genre }}</span>
-        <span *ngFor="let type of project.story_types">{{ type }}</span>
+        <span>{{ project.story_types }}</span>
       </div>
     </div>
     

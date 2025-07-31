@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ProjectService } from '../services/project.service';
 import { ProjectDataService } from '../services/project-data.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AiService } from './services/ai.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   
   projects: any[] = [];
   isLoading = false;
@@ -21,23 +22,24 @@ export class DashboardComponent implements OnInit {
   newProject = {
     name: '',
     author: '',
-    idea: ''
+    idea: '',
+    genres: ['Any'],
+    story_types: 'Any'
   };
   story_genres = [ 'Any', 'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime',
   'Documentary', 'Drama', 'Family', 'Fantasy', 'History', 'Horror', 'Music', 'Musical',
   'Mystery', 'Romance', 'Sci-Fi', 'Short', 'Sport', 'Thriller', 'War', 'Western' ];
-  selectedGenres: string[] = ['Any'];
-
-  story_types = [ 'Any', 'Movies', 'Tv Show', 'Book']
-  selectedStoryType: string = 'Any'
+  story_types = [ 'Any', 'Movie', 'Tv Show', 'Book']
   newProjectPrompt: string = ''
   generatedPrompts = []
+  private subs = new Subscription();
 
   constructor(
     private projectService: ProjectService, 
     private projectDataService: ProjectDataService,
     private aiService: AiService,
     private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -51,7 +53,8 @@ export class DashboardComponent implements OnInit {
 
   fetchAllProject(search: string, tags: any[]) {
    this.isLoading = true;
-   this.projectService.fetchAllProjects({
+   this.subs.add(
+    this.projectService.fetchAllProjects({
       search: search,
       tags: tags
     }).subscribe({
@@ -60,20 +63,6 @@ export class DashboardComponent implements OnInit {
         this.projects = res.projects || [];
         this.filteredProjects = this.projects
         this.isLoading = false;
-        // The response: 
-        // {
-        //   "status_code": 200,
-        //   "message": "Projects fetched!",
-        //   "projects": [
-        //       {
-        //           "author": "John Doe",
-        //           "idea": "A window woman begins to live her childhood dream of riding motorbike.",
-        //           "project_id": "397d398a-52d0-4353-b8fc-92c8ecbd1ffd",
-        //           "genre": [ "adventure" ]
-        //           "story_types": [ "movie" ]
-        //       }
-        //   ]
-        // }
       },
       error: (err) => {
         this.isLoading = false;
@@ -82,89 +71,86 @@ export class DashboardComponent implements OnInit {
         console.error('Error status code:', err.status); //The response is staus code: 404
       }
     })
+   )
   }
 
   selectProject(projectId: string) {
     console.log('Selecting project', projectId)
     // Fetch project data and set it in the service
-    this.projectService.fetchProjectData(projectId).subscribe({
-      next: (res: any) => {
-        console.log('Selected project response', res)
-        this.projectDataService.setProject(res.project);
-        this.router.navigate(['/playground/story-writing'], { 
-          queryParams: { 
-            project_id: projectId,
-            is_new: false,
-            is_plan: false
-          } 
-        });
-      },
-      error: (err) => {
-        console.error('Error fetching project:', err);
-      }
-    });
+    this.subs.add(
+      this.projectService.fetchProjectData(projectId).subscribe({
+        next: (res: any) => {
+          console.log('Selected project response', res)
+          this.projectDataService.setProject(res.project);
+          this.router.navigate(['/playground/story-writing'], { 
+            queryParams: { 
+              project_id: projectId,
+              is_new: false,
+              is_plan: false
+            } 
+          });
+        },
+        error: (err) => {
+          console.error('Error fetching project:', err);
+        }
+      })
+    )
   }
 
   createProject() {
-    this.projectService.createProject(this.newProject).subscribe({
-      next: (res: any) => {
-        let projectId = res.project.id
-        this.projectDataService.setProject(res.project);
-        if (res.status_code === 200 && this.selectedAction === 'start') {
-          this.startWriting(projectId);
-        } 
-      }
-    })
-  }
-
-  submitPrompt() {
-    this.projectService.updateProject({
-      "genres": this.selectedGenres,
-      "story_types": [this.selectedStoryType],
-      "prompt": this.newProjectPrompt
-    }).subscribe({
-      next: (res: any) => {
-        let projectId = res.project.id
-        this.projectDataService.setProject(res.project);
-        if (res.status_code === 200 && this.selectedAction === 'plan') {
-          this.planWriting(projectId);
-        } 
-      }
-    })
+    console.log('Creating project', this.newProject, this.selectedAction)
+    this.subs.add(
+      this.projectService.createProject(this.newProject).subscribe({
+        next: (res: any) => {
+          let projectId = res.project.project_id
+          this.projectDataService.setProject(res.project);
+          if (res.status_code === 200 && this.selectedAction === 'start') {
+            this.closePopup();
+            this.startWriting(projectId)
+          } else if (res.status_code === 200 && this.selectedAction === 'plan') {
+            this.closePopup();
+            this.planWriting(projectId);
+          }
+        }
+      })
+    )
   }
 
   startWriting(projectId: string) {
-    this.router.navigate(['/playground/story-writing'], { 
-      queryParams: { 
+    this.router.navigate(['/playground/story-writing'], {
+      queryParams: {
         project_id: projectId,
         is_new: true,
         is_plan: false
-      } 
+      }
     });
   }
 
   planWriting(projectId: string) {
-    this.router.navigate(['/playground/story-writing'], { 
-      queryParams: { 
+    this.router.navigate(['/playground/story-writing'], {
+      queryParams: {
         project_id: projectId,
         is_new: true,
         is_plan: true
-      } 
+      }
     });
   }
 
   generateIdeas() {
-    this.aiService.generateThreeIdeas().subscribe({
-      next: (res: any) => {
-        this.generatedIdeas = res.ideas
-      },
-      error: (err) => {
-        console.error('Error fetching project:', err);
-      }
-    })
+    this.subs.add(
+      this.aiService.generateThreeIdeas().subscribe({
+        next: (res: any) => {
+          this.generatedIdeas = res.ideas
+        },
+        error: (err) => {
+          console.error('Error fetching project:', err);
+        }
+      })
+    )
   }
 
   closePopup() {
+    console.log('Closing popup');
     this.showCreatePopup = false;
     this.currentStep = 1;
     this.resetForm();
@@ -194,12 +180,18 @@ export class DashboardComponent implements OnInit {
     this.newProject = {
       name: '',
       author: '',
-      idea: ''
+      idea: '',
+      genres: [],
+      story_types: ''
     };
-    this.selectedGenres = ['Any'];
-    this.selectedStoryType = 'Any';
     this.newProjectPrompt = '';
     this.generatedIdeas = [];
     this.generatedPrompts = [];
   }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
 }
+
+
