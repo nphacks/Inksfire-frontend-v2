@@ -28,6 +28,13 @@
         <mat-icon>account_tree</mat-icon>
         Map
       </button>
+      <button 
+        (click)="activeTab = 'beats'"
+        [class.active]="activeTab === 'beats'"
+        class="tab-btn">
+        <mat-icon>timeline</mat-icon>
+        Story Beats
+      </button>
     </div>
 
     <!-- Characters Tab -->
@@ -80,6 +87,57 @@
           <div class="empty-icon">👥</div>
           <h3>No characters found</h3>
           <p>Characters will appear here once they are created for this story</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Story Beats Tab -->
+    <div class="tab-content" *ngIf="activeTab === 'beats'">
+      <div class="story-beats-content">
+        <div class="beats-timeline" *ngIf="selectedStory?.story_beats && selectedStory.story_beats.length > 0">
+          <div class="timeline-container">
+            <div class="timeline-line"></div>
+            <div 
+              *ngFor="let beat of selectedStory.story_beats; let i = index" 
+              class="beat-item"
+              [class.left]="i % 2 === 0"
+              [class.right]="i % 2 === 1">
+              <div class="beat-marker">
+                <div class="beat-number">{{ i + 1 }}</div>
+              </div>
+              <div class="beat-content">
+                <div class="beat-header">
+                  <h4 class="beat-title">{{ beat.title || 'Beat ' + (i + 1) }}</h4>
+                  <span class="beat-type" *ngIf="beat.type">{{ beat.type }}</span>
+                </div>
+                <p class="beat-description">{{ beat.description || beat.content }}</p>
+                <div class="beat-meta" *ngIf="beat.duration || beat.page_count">
+                  <span *ngIf="beat.duration" class="meta-item">
+                    <mat-icon>schedule</mat-icon>
+                    {{ beat.duration }}
+                  </span>
+                  <span *ngIf="beat.page_count" class="meta-item">
+                    <mat-icon>description</mat-icon>
+                    {{ beat.page_count }} pages
+                  </span>
+                </div>
+                <div class="beat-characters" *ngIf="beat.characters && beat.characters.length > 0">
+                  <div class="characters-label">Characters:</div>
+                  <div class="character-tags">
+                    <span *ngFor="let character of beat.characters" class="character-tag">
+                      {{ character }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="empty-state" *ngIf="!selectedStory?.story_beats || selectedStory.story_beats.length === 0">
+          <div class="empty-icon">🎬</div>
+          <h3>No story beats found</h3>
+          <p>Story beats will appear here once they are generated for this story</p>
         </div>
       </div>
     </div>
