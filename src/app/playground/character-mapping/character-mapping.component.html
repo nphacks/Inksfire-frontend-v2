@@ -78,19 +78,55 @@
           </div>
         </div>
 
-        <div class="relationships-list" *ngIf="characterMap.length > 0">
-          <div class="relationship-card" *ngFor="let relationship of characterMap; let i = index">
-            <div class="relationship-header">
-              <div class="relationship-connection">
-                <span class="source-character">{{ relationship.source }}</span>
-                <mat-icon class="connection-arrow">arrow_forward</mat-icon>
-                <span class="target-character">{{ relationship.target }}</span>
+        <div class="character-tree-map" *ngIf="characterMap.length > 0">
+          <div class="tree-container">
+            <div class="character-nodes">
+              <div 
+                *ngFor="let character of getUniqueCharacters(); let i = index" 
+                class="character-node"
+                [style.left.px]="getCharacterPosition(character, i).x"
+                [style.top.px]="getCharacterPosition(character, i).y"
+                (click)="selectCharacterNode(character)">
+                <div class="node-content">
+                  <div class="character-name">{{ character }}</div>
+                  <div class="connection-count">{{ getConnectionCount(character) }} connections</div>
+                </div>
               </div>
             </div>
             
+            <svg class="connection-lines" width="100%" height="100%">
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                        refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="var(--color3)" />
+                </marker>
+              </defs>
+              <line 
+                *ngFor="let relationship of characterMap; let i = index"
+                [attr.x1]="getLineCoordinates(relationship).x1"
+                [attr.y1]="getLineCoordinates(relationship).y1"
+                [attr.x2]="getLineCoordinates(relationship).x2"
+                [attr.y2]="getLineCoordinates(relationship).y2"
+                [attr.stroke]="getRelationshipColor(relationship)"
+                stroke-width="2"
+                marker-end="url(#arrowhead)"
+                class="relationship-line"
+                (click)="selectRelationship(relationship)">
+              </line>
+            </svg>
+          </div>
+          
+          <div class="relationship-details" *ngIf="selectedRelationship">
+            <div class="details-header">
+              <h4>{{ selectedRelationship.source }} → {{ selectedRelationship.target }}</h4>
+              <button class="close-details" (click)="selectedRelationship = null">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            
             <div class="relationship-history">
-              <div class="history-content" *ngIf="relationship.history && relationship.history.length > 0">
-                <div class="history-item" *ngFor="let historyItem of relationship.history; let j = index">
+              <div class="history-content" *ngIf="selectedRelationship.history && selectedRelationship.history.length > 0">
+                <div class="history-item" *ngFor="let historyItem of selectedRelationship.history; let j = index">
                   <div class="history-data" [ngSwitch]="selectedHistoryType">
                     <div *ngSwitchCase="'type'" class="history-type">
                       <strong>Type:</strong> {{ historyItem.type }}
@@ -105,7 +141,7 @@
                 </div>
               </div>
               
-              <div class="no-history" *ngIf="!relationship.history || relationship.history.length === 0">
+              <div class="no-history" *ngIf="!selectedRelationship.history || selectedRelationship.history.length === 0">
                 <p>No history available for this relationship</p>
               </div>
             </div>
