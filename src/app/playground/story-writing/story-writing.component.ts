@@ -334,6 +334,42 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
     });
   }
   
+  getTargetAgeData() {
+    if (!this.activeStory?.target_demographics?.age) return [];
+    
+    return Object.entries(this.activeStory.target_demographics.age).map(([key, value]) => ({
+      label: key.replace(/_/g, ' ').replace('and', '+'),
+      value: value as number
+    }));
+  }
+  
+  getTargetGenderData() {
+    if (!this.activeStory?.target_demographics?.gender) return [];
+    
+    return Object.entries(this.activeStory.target_demographics.gender).map(([key, value]) => ({
+      label: key.charAt(0).toUpperCase() + key.slice(1),
+      value: value as number
+    }));
+  }
+  
+  getProjectAgeData() {
+    if (!this.activeStory?.projected_demographics?.age) return [];
+    
+    return Object.entries(this.activeStory.projected_demographics.age).map(([key, value]) => ({
+      label: key.replace(/_/g, ' ').replace('and', '+'),
+      value: value as number
+    }));
+  }
+  
+  getProjectGenderData() {
+    if (!this.activeStory?.projected_demographics?.gender) return [];
+    
+    return Object.entries(this.activeStory.projected_demographics.gender).map(([key, value]) => ({
+      label: key.charAt(0).toUpperCase() + key.slice(1),
+      value: value as number
+    }));
+  }
+  
   saveDemographics() {
     let target_demographics = {
       age: this.getAggregatedAgeData().reduce((acc, item) => {
