@@ -103,12 +103,17 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
               this.projectDataService.setProject(response.project);
               this.projectData = response.project;
               this.stories = this.projectData.stories;
-              this.activeStory = this.stories[0]
+              if (this.stories && this.stories.length > 0) {
+                this.activeStory = this.stories[0];
+              }
             })
           );
         } else {
           this.projectData = res;
           this.stories = this.projectData.stories || [];
+          if (this.stories && this.stories.length > 0 && !this.activeStory) {
+            this.activeStory = this.stories[0];
+          }
           return []; // No further observable needed
         }
       })
@@ -160,7 +165,13 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
       this.storyService.createStory(this.createStory).subscribe({
         next: (res: any) => {
           console.log(res)
-          this.projectDataService.setProject(res.project)
+          this.projectDataService.setProject(res.project);
+          this.projectData = res.project;
+          this.stories = this.projectData.stories || [];
+          if (this.stories && this.stories.length > 0) {
+            this.activeStory = this.stories[this.stories.length - 1]; // Select the newly created story
+          }
+          this.showCreateForm = false;
         },
         error: (err) => {
           console.error('Error:', err);
@@ -185,7 +196,9 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
       }).subscribe({
         next: (res: any) => {
           console.log(res)
-          this.projectDataService.setProject(res.project)
+          this.projectDataService.setProject(res.project);
+          this.projectData = res.project;
+          this.stories = this.projectData.stories || [];
         },
         error: (err) => {
           console.error('Error saving story:', err);
@@ -204,7 +217,9 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
       }).subscribe({
         next: (res: any) => {
           console.log(res)
-          this.projectDataService.setProject(res.project)
+          this.projectDataService.setProject(res.project);
+          this.projectData = res.project;
+          this.stories = this.projectData.stories || [];
         },
         error: (err) => {
           console.error('Error saving story:', err);
