@@ -495,4 +495,30 @@
     flex-direction: column;
     gap: 0.5rem;
   }
+  
+  .beats-timeline {
+    .timeline-container {
+      .beat-item {
+        &.left,
+        &.right {
+          flex-direction: column !important;
+          align-items: center;
+          
+          .beat-content {
+            margin: 1rem 0 0 0 !important;
+            text-align: center !important;
+            max-width: 100% !important;
+          }
+          
+          .beat-marker {
+            order: 1 !important;
+          }
+        }
+      }
+      
+      .timeline-line {
+        display: none;
+      }
+    }
+  }
 }
