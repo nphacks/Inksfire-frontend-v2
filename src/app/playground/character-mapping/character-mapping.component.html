@@ -1,0 +1,160 @@
+<div class="character-mapping-container">
+  <div class="character-mapping-header">
+    <h1>Character Mapping</h1>
+    <div class="story-selector">
+      <label>Select Story:</label>
+      <select [(ngModel)]="selectedStoryIndex" (change)="onStoryChange()">
+        <option *ngFor="let story of stories; let i = index" [value]="i">
+          {{ story.title }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="character-mapping-content" *ngIf="selectedStory">
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+      <button 
+        (click)="activeTab = 'characters'"
+        [class.active]="activeTab === 'characters'"
+        class="tab-btn">
+        <mat-icon>people</mat-icon>
+        Characters
+      </button>
+      <button 
+        (click)="activeTab = 'map'"
+        [class.active]="activeTab === 'map'"
+        class="tab-btn">
+        <mat-icon>account_tree</mat-icon>
+        Map
+      </button>
+    </div>
+
+    <!-- Characters Tab -->
+    <div class="tab-content" *ngIf="activeTab === 'characters'">
+      <div class="characters-list">
+        <div class="character-card" *ngFor="let character of characterList; let i = index">
+          <div class="character-header">
+            <h3>{{ character.name }}</h3>
+            <button class="actor-options-btn" (click)="openActorOptions(character)">
+              <mat-icon>person_search</mat-icon>
+              Actor Options
+            </button>
+          </div>
+          
+          <div class="character-description">
+            <p>{{ character.description }}</p>
+          </div>
+          
+          <div class="character-notes">
+            <label>Notes:</label>
+            <textarea 
+              [(ngModel)]="character.notes" 
+              (input)="saveCharacterNotes(character)"
+              placeholder="Add your notes about this character..."
+              rows="3"></textarea>
+          </div>
+        </div>
+        
+        <div class="empty-state" *ngIf="characterList.length === 0">
+          <div class="empty-icon">👥</div>
+          <h3>No characters found</h3>
+          <p>Characters will appear here once they are created for this story</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Tab -->
+    <div class="tab-content" *ngIf="activeTab === 'map'">
+      <div class="map-content">
+        <div class="map-controls" *ngIf="characterMap.length > 0">
+          <div class="history-selector">
+            <label>View History:</label>
+            <select [(ngModel)]="selectedHistoryType" (change)="onHistoryTypeChange()">
+              <option value="type">Type</option>
+              <option value="step">Step</option>
+              <option value="notes">Notes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="relationships-list" *ngIf="characterMap.length > 0">
+          <div class="relationship-card" *ngFor="let relationship of characterMap; let i = index">
+            <div class="relationship-header">
+              <div class="relationship-connection">
+                <span class="source-character">{{ relationship.source }}</span>
+                <mat-icon class="connection-arrow">arrow_forward</mat-icon>
+                <span class="target-character">{{ relationship.target }}</span>
+              </div>
+            </div>
+            
+            <div class="relationship-history">
+              <div class="history-content" *ngIf="relationship.history && relationship.history.length > 0">
+                <div class="history-item" *ngFor="let historyItem of relationship.history; let j = index">
+                  <div class="history-data" [ngSwitch]="selectedHistoryType">
+                    <div *ngSwitchCase="'type'" class="history-type">
+                      <strong>Type:</strong> {{ historyItem.type }}
+                    </div>
+                    <div *ngSwitchCase="'step'" class="history-step">
+                      <strong>Step:</strong> {{ historyItem.step }}
+                    </div>
+                    <div *ngSwitchCase="'notes'" class="history-notes">
+                      <strong>Notes:</strong> {{ historyItem.notes }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="no-history" *ngIf="!relationship.history || relationship.history.length === 0">
+                <p>No history available for this relationship</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="empty-state" *ngIf="characterMap.length === 0">
+          <div class="empty-icon">🗺️</div>
+          <h3>No character relationships found</h3>
+          <p>Character relationships will appear here once they are mapped for this story</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-story-selected" *ngIf="!selectedStory">
+    <div class="empty-icon">📖</div>
+    <h3>No story selected</h3>
+    <p>Please select a story to view character mapping</p>
+  </div>
+</div>
+
+<!-- Actor Options Popup -->
+<div class="actor-options-popup" [class.show]="showActorOptions">
+  <div class="popup-content">
+    <div class="popup-header">
+      <h3>Actor Options for {{ selectedCharacter?.name }}</h3>
+      <button class="close-popup" (click)="closeActorOptions()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="popup-body">
+      <div class="actor-suggestions">
+        <p>Actor suggestions and casting options will be implemented here.</p>
+        <div class="placeholder-content">
+          <div class="suggestion-item">
+            <strong>Suggested Actors:</strong>
+            <p>Based on character description and demographics</p>
+          </div>
+          <div class="suggestion-item">
+            <strong>Physical Traits:</strong>
+            <p>Age range, appearance, and casting requirements</p>
+          </div>
+          <div class="suggestion-item">
+            <strong>Voice Characteristics:</strong>
+            <p>Tone, accent, and vocal requirements</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
