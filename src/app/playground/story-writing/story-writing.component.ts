@@ -92,6 +92,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
               this.projectDataService.setProject(response.project);
               this.projectData = response.project;
               this.stories = this.projectData.stories;
+              this.activeStory = this.stories[0]
             })
           );
         } else {
@@ -334,28 +335,30 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   }
   
   saveDemographics() {
-    const demographicsData = {
-      project_id: this.projectId,
-      target_demographics: {
-        age: this.getAggregatedAgeData().reduce((acc, item) => {
-          const key = item.label.replace(/\s/g, '_').replace('+', 'and').toLowerCase();
-          acc[key] = item.value;
-          return acc;
-        }, {} as any),
-        gender: this.getAggregatedGenderData().reduce((acc, item) => {
-          acc[item.label.toLowerCase()] = item.value;
-          return acc;
-        }, {} as any)
-      },
-      selected_tags: this.selectedTags
-    };
+    let target_demographics = {
+      age: this.getAggregatedAgeData().reduce((acc, item) => {
+        const key = item.label.replace(/\s/g, '_').replace('+', 'and').toLowerCase();
+        acc[key] = item.value;
+        return acc;
+      }, {} as any),
+      gender: this.getAggregatedGenderData().reduce((acc, item) => {
+        acc[item.label.toLowerCase()] = item.value;
+        return acc;
+      }, {} as any)
+    }
+
+    const filteredTags = this.selectedTags.map(tag => ({
+      name: tag.name,
+      tag_id: tag.tag_id,
+      type: tag.type
+    }));
     
-    console.log('Saving demographics:', demographicsData);
     this.subs.add(
-      this.projectService.updateProject({ 
+      this.storyService.saveStoryMetadata({ 
         project_id: this.projectId, 
-        "target_demographics": demographicsData.target_demographics,
-        "selected_tags": demographicsData.selected_tags
+        story_id: this.activeStory.story_id, 
+        "target_demographics": target_demographics,
+        "selected_tags": filteredTags
       }).subscribe({
         next: (res: any) => {
           console.log(res)

@@ -16,6 +16,13 @@ interface SaveStoryRequest {
   writing: string
 }
 
+interface SaveStoryMetadataRequest {
+  project_id: string,
+  story_id: string,
+  target_demographics?: any,
+  selected_tags?: any
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -29,5 +36,9 @@ export class StoryService {
 
   saveStory(data: SaveStoryRequest) {
     return this.http.post(`${environment.apiUrl}/story/save-story`, data);   
+  }
+
+  saveStoryMetadata(data: SaveStoryMetadataRequest) {
+    return this.http.post(`${environment.apiUrl}/story/update-story-metadata`, data);   
   }
 }
