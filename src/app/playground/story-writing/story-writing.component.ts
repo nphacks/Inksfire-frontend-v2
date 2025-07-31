@@ -29,8 +29,9 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   searchedEntities = []
   searchedTagType = []
   tagSearchText = ''
-  selectedTagDemographics: any
-  aggregatedTagDemographics: any
+  selectedTags: any[] = []
+  currentTagDemographics: any = null
+  Math = Math
   stories: { title: string; writing?: string,  }[] = [];
   activeStory: any;
   storyStructures = [

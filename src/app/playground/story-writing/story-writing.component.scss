@@ -584,9 +584,9 @@
   .popup-content {
     background: white;
     border-radius: 16px;
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
+    max-width: 1000px;
+    width: 95%;
+    max-height: 90vh;
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     
@@ -628,7 +628,10 @@
     .popup-body {
       padding: 2rem;
       overflow-y: auto;
-      max-height: calc(80vh - 100px);
+      max-height: calc(90vh - 100px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
     }
   }
 }
@@ -672,10 +675,19 @@
 .searched-tags {
   margin-bottom: 1.5rem;
   
+  h4 {
+    color: var(--color1);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
   .tags-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
     
     .tag-item {
       background: #f8f9ff;
@@ -691,20 +703,122 @@
         background: #f0f4ff;
         border-color: #330099;
       }
+      
+      &.selected {
+        background: linear-gradient(135deg, #330099, #4a0db8);
+        color: white;
+        border-color: #330099;
+      }
     }
   }
 }
 
-.selected-demographics {
+.demographics-visualization {
+  h4 {
+    color: var(--color1);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}
+
+.single-tag-demographics {
+  margin-bottom: 2rem;
+  
+  .tag-name {
+    font-weight: 600;
+    color: #330099;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .demographics-charts {
+    .chart-section {
+      margin-bottom: 1.5rem;
+      
+      h5 {
+        color: var(--color1);
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      
+      .chart-bars {
+        .bar-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: 0.5rem;
+          font-size: 0.85rem;
+          
+          .bar-label {
+            width: 100px;
+            color: var(--color1);
+            font-weight: 500;
+          }
+          
+          .bar-container {
+            flex: 1;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin: 0 0.5rem;
+            position: relative;
+            overflow: hidden;
+            
+            .bar-fill {
+              height: 100%;
+              border-radius: 10px;
+              transition: width 0.3s ease;
+              
+              &.positive {
+                background: linear-gradient(90deg, #28a745, #20c997);
+              }
+              
+              &.negative {
+                background: linear-gradient(90deg, #dc3545, #fd7e14);
+              }
+            }
+          }
+          
+          .bar-value {
+            width: 50px;
+            text-align: right;
+            font-weight: 600;
+            
+            &.positive {
+              color: #28a745;
+            }
+            
+            &.negative {
+              color: #dc3545;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.selected-tags-section {
+  margin-bottom: 2rem;
+  
+  h4 {
+    color: var(--color1);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
   .selected-tags {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 0.5rem;
+    margin-bottom: 1rem;
     
     .selected-tag {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 0.5rem;
       background: linear-gradient(135deg, #330099, #4a0db8);
       color: white;
       padding: 0.5rem 0.75rem;
@@ -728,6 +842,121 @@
           font-size: 14px;
           width: 14px;
           height: 14px;
+        }
+      }
+    }
+  }
+  
+  .save-demographics-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.aggregated-heatmap {
+  margin-top: 2rem;
+  
+  h4 {
+    color: var(--color1);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .heatmap-container {
+    background: #f8f9ff;
+    border: 1px solid #e0e7ff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    
+    .heatmap-section {
+      margin-bottom: 1.5rem;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      h5 {
+        color: var(--color1);
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      
+      .heatmap-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.5rem;
+        
+        .heatmap-cell {
+          background: white;
+          border: 1px solid #e0e0e0;
+          border-radius: 6px;
+          padding: 0.75rem;
+          text-align: center;
+          transition: all 0.2s ease;
+          
+          .cell-label {
+            font-size: 0.8rem;
+            color: var(--color1);
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+          }
+          
+          .cell-value {
+            font-size: 1rem;
+            font-weight: 600;
+            
+            &.positive {
+              color: #28a745;
+            }
+            
+            &.negative {
+              color: #dc3545;
+            }
+            
+            &.neutral {
+              color: #6c757d;
+            }
+          }
+          
+          &.high-positive {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-color: #28a745;
+          }
+          
+          &.medium-positive {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-color: #28a745;
+          }
+          
+          &.high-negative {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border-color: #dc3545;
+          }
+          
+          &.medium-negative {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-color: #dc3545;
+          }
         }
       }
     }
