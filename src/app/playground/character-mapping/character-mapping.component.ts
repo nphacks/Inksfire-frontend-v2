@@ -185,8 +185,8 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
     
     // Prepare elements for Cytoscape
     const elements = this.prepareCytoscapeElements();
-    
-    if (elements.length === 0) {
+
+    if (Array.isArray(elements) && elements.length === 0) {
       console.log('No character data available');
       return;
     }
