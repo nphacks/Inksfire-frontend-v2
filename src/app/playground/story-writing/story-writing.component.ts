@@ -456,10 +456,11 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
       this.selectedText = selection.toString().trim();
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
+      const editorRect = this.editor.nativeElement.getBoundingClientRect();
       
       this.aiAssistantPosition = {
-        top: rect.bottom + window.scrollY + 10,
-        left: rect.left + window.scrollX
+        top: rect.bottom - editorRect.top + 10,
+        left: rect.left - editorRect.left
       };
       
       this.showAiAssistant = true;

@@ -396,6 +396,11 @@
 .ai-assistant-popup {
   position: absolute;
   z-index: 1000;
+  pointer-events: none;
+  
+  .ai-assistant-content {
+    pointer-events: auto;
+  }
   
   .ai-help-btn {
     display: flex;
