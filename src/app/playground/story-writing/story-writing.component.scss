@@ -402,16 +402,6 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   min-width: 250px;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-10px);
-  transition: all 0.3s ease;
-  
-  &.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
   
   .ai-assistant-content {
     .ai-help-btn {
