@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 interface CreateStoryRequest {
-  name: string,
+  project_id: string,
+  title: string,
   structure: string,
   timeline: string
 }
@@ -23,10 +24,10 @@ export class StoryService {
   constructor(private http: HttpClient) {}
   
   createStory(data: CreateStoryRequest) {
-    return this.http.post(`${environment.apiUrl}/story/create-story"`, data);   
+    return this.http.post(`${environment.apiUrl}/story/create-story`, data);   
   }
 
   saveStory(data: SaveStoryRequest) {
-    return this.http.post(`${environment.apiUrl}/story/save-story"`, data);   
+    return this.http.post(`${environment.apiUrl}/story/save-story`, data);   
   }
 }

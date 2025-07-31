@@ -34,6 +34,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   stories: { name: string; writing?: string }[] = [];
   activeStory: any;
   storyStructures = [
+    'Any',
     'Three-Act Structure',
     'The Hero\'s Journey',
     'Save the Cat',
@@ -48,11 +49,13 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   ];
   timelines = ['Linear', 'Non-linear'];
   createStory = {
-    name: 'Untitled',
+    project_id: '',
+    title: 'Untitled',
     structure: this.storyStructures[0],
     timeline: this.timelines[0]
   };
   saveTimeout: any;
+  showCreateForm = false
   private subs = new Subscription();
 
   constructor(
@@ -118,7 +121,9 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   }
 
   createStoryData(form: any) {
+    this.createStory.project_id = this.projectId;
     console.log('Story Submitted:', this.createStory);
+    
     this.subs.add(
       this.storyService.createStory(this.createStory).subscribe({
         next: (res: any) => {
@@ -126,7 +131,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
           this.projectDataService.setProject(res.project)
         },
         error: (err) => {
-          console.error('Error fetching project:', err);
+          console.error('Error:', err);
         }
       })
     )
