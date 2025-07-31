@@ -217,6 +217,11 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   selectTag(tag: any) {
     console.log(tag)
     
+    // Check if maximum tags reached
+    if (!this.isTagSelected(tag) && this.selectedTags.length >= 15) {
+      return;
+    }
+    
     // Check if tag is already selected
     if (this.isTagSelected(tag)) {
       this.removeSelectedTag(tag);
