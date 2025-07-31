@@ -23,7 +23,10 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
   activeTab: string = 'characters';
   selectedHistoryType: string = 'type';
   showActorOptions: boolean = false;
+  showActorInfo: boolean = false;
   selectedCharacter: any = null;
+  selectedActor: any = null;
+  actorSearchQuery: string = '';
   private subs = new Subscription();
   private svg: any;
   private simulation: any;
@@ -94,11 +97,32 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
   openActorOptions(character: any) {
     this.selectedCharacter = character;
     this.showActorOptions = true;
+    this.showActorInfo = false;
   }
 
   closeActorOptions() {
     this.showActorOptions = false;
     this.selectedCharacter = null;
+    this.actorSearchQuery = '';
+  }
+
+  showActorInfo(actor: any) {
+    this.selectedActor = actor;
+    this.showActorInfo = true;
+    this.showActorOptions = false;
+    console.log('Selected actor:', actor);
+  }
+
+  closeActorInfo() {
+    this.showActorInfo = false;
+    this.selectedActor = null;
+  }
+
+  searchActors() {
+    if (this.selectedCharacter && this.actorSearchQuery.trim()) {
+      console.log('Character context:', this.selectedCharacter.description);
+      console.log('User Search:', this.actorSearchQuery);
+    }
   }
 
   initializeD3Chart() {
