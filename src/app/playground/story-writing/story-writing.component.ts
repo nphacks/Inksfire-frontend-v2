@@ -101,6 +101,10 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
     this.isDrawerOpen = !this.isDrawerOpen;
   }
 
+  toggleCreateForm() {
+    this.showCreateForm = !this.showCreateForm;
+  }
+
   trackByStoryName(index: number, story: any): string {
     return story?.name || index;
   }
