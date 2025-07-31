@@ -156,22 +156,156 @@
       <!-- Demographics Tab -->
       <div class="tab-content" *ngIf="activeHelperTab === 'demographics'">
         <div class="demographics-content">
-          <div *ngIf="!projectData.target_demographics && !projectData.projected_demographics" class="no-demographics">
-            <p>Add tags to see demographics</p>
-            <button (click)="toggleTagsPopup()" class="add-tags-btn">
-              <mat-icon>add</mat-icon>
-              Add Tags
+          <!-- Demographics Type Selector -->
+          <div class="demographics-selector">
+            <button 
+              (click)="selectedDemographicsType = 'target'"
+              [class.active]="selectedDemographicsType === 'target'"
+              class="demographics-type-btn">
+              Target Demographics
+            </button>
+            <button 
+              (click)="selectedDemographicsType = 'project'"
+              [class.active]="selectedDemographicsType === 'project'"
+              class="demographics-type-btn">
+              Project Demographics
             </button>
           </div>
-          
-          <div *ngIf="projectData.target_demographics || projectData.projected_demographics" class="demographics-display">
-            <h4>Demographics Information</h4>
-            <div class="demographics-data">
-              <p>Demographics data will be displayed here</p>
+
+          <!-- Target Demographics View -->
+          <div *ngIf="selectedDemographicsType === 'target'" class="demographics-view">
+            <div *ngIf="!activeStory?.target_demographics && !activeStory?.selected_tags" class="no-demographics">
+              <p>Add tags to see target demographics</p>
               <button (click)="toggleTagsPopup()" class="add-tags-btn">
                 <mat-icon>add</mat-icon>
-                Add More Tags
+                Add Tags
               </button>
+            </div>
+            
+            <div *ngIf="activeStory?.target_demographics || activeStory?.selected_tags" class="demographics-display">
+              <!-- Target Demographics Heatmap -->
+              <div class="demographics-heatmap" *ngIf="activeStory?.target_demographics">
+                <h4>Target Demographics Heatmap</h4>
+                <div class="heatmap-container">
+                  <div class="heatmap-section">
+                    <h5>Age Groups</h5>
+                    <div class="heatmap-grid">
+                      <div 
+                        *ngFor="let item of getTargetAgeData()" 
+                        class="heatmap-cell"
+                        [class.high-positive]="item.value >= 0.15"
+                        [class.medium-positive]="item.value >= 0.05 && item.value < 0.15"
+                        [class.high-negative]="item.value <= -0.15"
+                        [class.medium-negative]="item.value <= -0.05 && item.value > -0.15">
+                        <div class="cell-label">{{ item.label }}</div>
+                        <div 
+                          class="cell-value"
+                          [class.positive]="item.value >= 0"
+                          [class.negative]="item.value < 0"
+                          [class.neutral]="item.value === 0">
+                          {{ (item.value * 100).toFixed(0) }}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="heatmap-section">
+                    <h5>Gender</h5>
+                    <div class="heatmap-grid">
+                      <div 
+                        *ngFor="let item of getTargetGenderData()" 
+                        class="heatmap-cell"
+                        [class.high-positive]="item.value >= 0.15"
+                        [class.medium-positive]="item.value >= 0.05 && item.value < 0.15"
+                        [class.high-negative]="item.value <= -0.15"
+                        [class.medium-negative]="item.value <= -0.05 && item.value > -0.15">
+                        <div class="cell-label">{{ item.label }}</div>
+                        <div 
+                          class="cell-value"
+                          [class.positive]="item.value >= 0"
+                          [class.negative]="item.value < 0"
+                          [class.neutral]="item.value === 0">
+                          {{ (item.value * 100).toFixed(0) }}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Target Selected Tags -->
+              <div class="selected-tags-display" *ngIf="activeStory?.selected_tags">
+                <h4>Selected Tags ({{ activeStory.selected_tags.length }})</h4>
+                <div class="tags-list">
+                  <div *ngFor="let tag of activeStory.selected_tags" class="tag-item-display">
+                    <span class="tag-name">{{ tag.name }}</span>
+                    <span class="tag-type" *ngIf="tag.type">{{ (tag.type ?? '') | tagType }}</span>
+                  </div>
+                </div>
+                <button (click)="toggleTagsPopup()" class="add-tags-btn">
+                  <mat-icon>edit</mat-icon>
+                  Edit Tags
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Demographics View -->
+          <div *ngIf="selectedDemographicsType === 'project'" class="demographics-view">
+            <div *ngIf="!activeStory?.projected_demographics" class="no-demographics">
+              <p>Submit Story to see the projected demographics.</p>
+            </div>
+            
+            <div *ngIf="activeStory?.projected_demographics" class="demographics-display">
+              <!-- Project Demographics Heatmap -->
+              <div class="demographics-heatmap">
+                <h4>Project Demographics Heatmap</h4>
+                <div class="heatmap-container">
+                  <div class="heatmap-section">
+                    <h5>Age Groups</h5>
+                    <div class="heatmap-grid">
+                      <div 
+                        *ngFor="let item of getProjectAgeData()" 
+                        class="heatmap-cell"
+                        [class.high-positive]="item.value >= 0.15"
+                        [class.medium-positive]="item.value >= 0.05 && item.value < 0.15"
+                        [class.high-negative]="item.value <= -0.15"
+                        [class.medium-negative]="item.value <= -0.05 && item.value > -0.15">
+                        <div class="cell-label">{{ item.label }}</div>
+                        <div 
+                          class="cell-value"
+                          [class.positive]="item.value >= 0"
+                          [class.negative]="item.value < 0"
+                          [class.neutral]="item.value === 0">
+                          {{ (item.value * 100).toFixed(0) }}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="heatmap-section">
+                    <h5>Gender</h5>
+                    <div class="heatmap-grid">
+                      <div 
+                        *ngFor="let item of getProjectGenderData()" 
+                        class="heatmap-cell"
+                        [class.high-positive]="item.value >= 0.15"
+                        [class.medium-positive]="item.value >= 0.05 && item.value < 0.15"
+                        [class.high-negative]="item.value <= -0.15"
+                        [class.medium-negative]="item.value <= -0.05 && item.value > -0.15">
+                        <div class="cell-label">{{ item.label }}</div>
+                        <div 
+                          class="cell-value"
+                          [class.positive]="item.value >= 0"
+                          [class.negative]="item.value < 0"
+                          [class.neutral]="item.value === 0">
+                          {{ (item.value * 100).toFixed(0) }}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
