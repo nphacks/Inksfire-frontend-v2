@@ -521,6 +521,166 @@
   }
 }
 
+// AI Help Tab Styles
+.ai-help-content {
+  .ai-help-form {
+    .form-group {
+      margin-bottom: 1.5rem;
+      
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--color1);
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+      
+      .context-textarea {
+        width: 100%;
+        min-height: 80px;
+        padding: 0.75rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        background: #f8f9fa;
+        color: #666;
+        resize: vertical;
+        box-sizing: border-box;
+        
+        &:focus {
+          outline: none;
+          border-color: #330099;
+        }
+      }
+      
+      textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        resize: vertical;
+        box-sizing: border-box;
+        
+        &:focus {
+          outline: none;
+          border-color: #330099;
+        }
+      }
+      
+      .tags-selection {
+        max-height: 120px;
+        overflow-y: auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 0.75rem;
+        background: #f8f9fa;
+        
+        .tag-checkbox-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 0.5rem;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+          
+          input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+          }
+          
+          label {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--color1);
+            cursor: pointer;
+          }
+        }
+        
+        .no-tags {
+          color: #666;
+          font-size: 0.85rem;
+          font-style: italic;
+          text-align: center;
+          padding: 1rem;
+        }
+      }
+    }
+    
+    .help-me-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #330099, #4a0db8);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      width: 100%;
+      
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(51, 0, 153, 0.3);
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+  
+  .ai-response {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f9ff;
+    border: 1px solid #e0e7ff;
+    border-radius: 8px;
+    
+    h4 {
+      color: var(--color1);
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    
+    .response-content {
+      color: var(--color1);
+      line-height: 1.6;
+      
+      p {
+        margin-bottom: 1rem;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+      
+      ul, ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+        
+        li {
+          margin-bottom: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
 // Demographics Tab Styles
 .demographics-content {
   .demographics-selector {

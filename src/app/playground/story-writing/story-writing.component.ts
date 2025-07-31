@@ -418,6 +418,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   onTextSelection(event: any) {
     const selection = window.getSelection();
     if (selection && selection.toString().trim().length > 0) {
+      this.selectedText = selection.toString().trim();
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
       
@@ -429,7 +430,79 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
       this.showAiAssistant = true;
     } else {
       this.showAiAssistant = false;
+      this.selectedText = '';
     }
+  }
+
+  openAiHelp() {
+    this.aiHelpContext = this.selectedText;
+    this.activeHelperTab = 'ai';
+    this.isDrawerOpen = true;
+    this.showAiAssistant = false;
+    
+    // Select all tags by default
+    if (this.activeStory?.selected_tags) {
+      this.activeStory.selected_tags.forEach((tag: any) => {
+        tag.selected = true;
+      });
+    }
+  }
+
+  submitAiHelp() {
+    const selectedTags = this.activeStory?.selected_tags?.filter((tag: any) => tag.selected) || [];
+    
+    console.log('AI Help Request:', {
+      context: this.aiHelpContext,
+      instructions: this.aiHelpInstructions,
+      tags: selectedTags
+    });
+    
+    // Mock response for now - replace with actual AI service call
+    this.aiHelpResponse = `
+      <p>Based on your selected text and instructions, here are some suggestions:</p>
+      <ul>
+        <li>Consider adding more descriptive language to enhance the scene</li>
+        <li>The pacing could be improved by breaking up longer sentences</li>
+        <li>Adding dialogue might make this section more engaging</li>
+      </ul>
+      <p>These suggestions are tailored to your selected tags and story context.</p>
+    `;
+  }
+
+  getTargetAgeData() {
+    if (!this.activeStory?.target_demographics?.age) return [];
+    
+    return Object.entries(this.activeStory.target_demographics.age).map(([key, value]) => ({
+      label: key.replace(/_/g, ' ').replace('and', '+'),
+      value: value as number
+    }));
+  }
+  
+  getTargetGenderData() {
+    if (!this.activeStory?.target_demographics?.gender) return [];
+    
+    return Object.entries(this.activeStory.target_demographics.gender).map(([key, value]) => ({
+      label: key.charAt(0).toUpperCase() + key.slice(1),
+      value: value as number
+    }));
+  }
+  
+  getProjectAgeData() {
+    if (!this.activeStory?.projected_demographics?.age) return [];
+    
+    return Object.entries(this.activeStory.projected_demographics.age).map(([key, value]) => ({
+      label: key.replace(/_/g, ' ').replace('and', '+'),
+      value: value as number
+    }));
+  }
+  
+  getProjectGenderData() {
+    if (!this.activeStory?.projected_demographics?.gender) return [];
+    
+    return Object.entries(this.activeStory.projected_demographics.gender).map(([key, value]) => ({
+      label: key.charAt(0).toUpperCase() + key.slice(1),
+      value: value as number
+    }));
   }
 
   ngOnDestroy() {

@@ -109,10 +109,8 @@
                 [style.top.px]="aiAssistantPosition.top"
                 [style.left.px]="aiAssistantPosition.left">
                 <div class="ai-assistant-content">
-                  <button class="ai-help-btn" (click)="openAiHelp()">
-                    <mat-icon>psychology</mat-icon>
-                    AI Assistant
-                  </button>
+                  <h4>AI Assistant</h4>
+                  <p>AI writing assistance features will appear here.</p>
                 </div>
               </div>
             </div>
@@ -316,8 +314,58 @@
       <!-- AI Help Tab -->
       <div class="tab-content" *ngIf="activeHelperTab === 'ai'">
         <div class="ai-help-content">
-          <h4>AI Writing Assistant</h4>
-          <p>AI assistance features coming soon...</p>
+          <form class="ai-help-form" (ngSubmit)="submitAiHelp()">
+            <div class="form-group">
+              <label>Context (Selected Text)</label>
+              <textarea 
+                [(ngModel)]="aiHelpContext" 
+                name="context"
+                readonly 
+                class="context-textarea"
+                placeholder="Select text in the document to provide context..."></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>Tags</label>
+              <div class="tags-selection">
+                <div 
+                  *ngFor="let tag of (activeStory?.selected_tags || [])" 
+                  class="tag-checkbox-item">
+                  <input 
+                    type="checkbox" 
+                    [id]="'tag-' + tag.name"
+                    [(ngModel)]="tag.selected"
+                    name="tag-{{tag.name}}" />
+                  <label [for]="'tag-' + tag.name">{{ tag.name }}</label>
+                </div>
+                <div *ngIf="!activeStory?.selected_tags || activeStory.selected_tags.length === 0" class="no-tags">
+                  No tags available. Add tags in Demographics tab first.
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Help Instructions</label>
+              <textarea 
+                [(ngModel)]="aiHelpInstructions" 
+                name="instructions"
+                placeholder="What kind of help do you need? (e.g., improve dialogue, add description, fix pacing...)"
+                rows="3"></textarea>
+            </div>
+            
+            <button 
+              type="submit" 
+              class="help-me-btn"
+              [disabled]="!aiHelpContext || !aiHelpInstructions">
+              <mat-icon>auto_fix_high</mat-icon>
+              Help me!
+            </button>
+          </form>
+          
+          <div class="ai-response" *ngIf="aiHelpResponse">
+            <h4>AI Suggestions</h4>
+            <div class="response-content" [innerHTML]="aiHelpResponse"></div>
+          </div>
         </div>
       </div>
 
