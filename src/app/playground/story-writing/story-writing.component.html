@@ -109,8 +109,10 @@
                 [style.top.px]="aiAssistantPosition.top"
                 [style.left.px]="aiAssistantPosition.left">
                 <div class="ai-assistant-content">
-                  <h4>AI Assistant</h4>
-                  <p>AI writing assistance features will appear here.</p>
+                  <button class="ai-help-btn" (click)="openAiHelp()">
+                    <mat-icon>psychology</mat-icon>
+                    AI Assistant
+                  </button>
                 </div>
               </div>
             </div>

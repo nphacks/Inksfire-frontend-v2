@@ -353,8 +353,9 @@
   border: none;
   background: white;
   border-radius: 8px;
-  direction: ltr;
-  text-align: left;
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: normal !important;
   
   &:empty::before {
     content: "Begin your story here...";
@@ -369,12 +370,19 @@
   p {
     margin-bottom: 1.2rem;
     text-align: justify;
+    direction: ltr !important;
   }
   
   h1, h2, h3 {
     color: var(--color1);
     margin-top: 2rem;
     margin-bottom: 1rem;
+    direction: ltr !important;
+  }
+  
+  * {
+    direction: ltr !important;
+    unicode-bidi: normal !important;
   }
 }
 
