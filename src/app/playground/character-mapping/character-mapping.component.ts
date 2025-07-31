@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { ProjectDataService } from '../services/project-data.service';
 import { Subscription } from 'rxjs';
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-character-mapping',
   templateUrl: './character-mapping.component.html',
   styleUrl: './character-mapping.component.scss'
 })
-export class CharacterMappingComponent implements OnInit {
+export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private projectDataService: ProjectDataService) {}
+  
+  @ViewChild('d3Container', { static: false }) d3Container!: ElementRef;
   
   projectData: any = {};
   stories: any[] = [];
@@ -21,9 +24,11 @@ export class CharacterMappingComponent implements OnInit {
   selectedHistoryType: string = 'type';
   showActorOptions: boolean = false;
   selectedCharacter: any = null;
-  selectedRelationship: any = null;
-  selectedCharacterNode: string = '';
   private subs = new Subscription();
+  private svg: any;
+  private simulation: any;
+  private nodes: any[] = [];
+  private links: any[] = [];
 
   ngOnInit(): void {
     this.subs.add(
@@ -47,6 +52,12 @@ export class CharacterMappingComponent implements OnInit {
     );
   }
 
+  ngAfterViewInit(): void {
+    if (this.activeTab === 'map' && this.characterMap.length > 0) {
+      setTimeout(() => this.initializeD3Chart(), 100);
+    }
+  }
+
   onStoryChange() {
     if (this.stories.length > 0 && this.selectedStoryIndex >= 0) {
       this.selectedStory = this.stories[this.selectedStoryIndex];
@@ -59,12 +70,19 @@ export class CharacterMappingComponent implements OnInit {
           character.notes = '';
         }
       });
+      
+      // Reinitialize D3 chart if on map tab
+      if (this.activeTab === 'map' && this.characterMap.length > 0) {
+        setTimeout(() => this.initializeD3Chart(), 100);
+      }
     }
   }
 
   onHistoryTypeChange() {
-    // This method is called when the history type selector changes
-    // The template will automatically update based on selectedHistoryType
+    // Update edge labels when history type changes
+    if (this.svg) {
+      this.updateEdgeLabels();
+    }
   }
 
   saveCharacterNotes(character: any) {
@@ -83,13 +101,141 @@ export class CharacterMappingComponent implements OnInit {
     this.selectedCharacter = null;
   }
 
-  getUniqueCharacters(): string[] {
+  initializeD3Chart() {
+    if (!this.d3Container || !this.characterMap.length) return;
+    
+    // Clear any existing chart
+    d3.select(this.d3Container.nativeElement).selectAll("*").remove();
+    
+    const container = this.d3Container.nativeElement;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    
+    // Create SVG
+    this.svg = d3.select(container)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
+    
+    // Create arrow marker
+    this.svg.append('defs')
+      .append('marker')
+      .attr('id', 'arrowhead')
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 15)
+      .attr('refY', 0)
+      .attr('markerWidth', 6)
+      .attr('markerHeight', 6)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M0,-5L10,0L0,5')
+      .attr('fill', '#330099');
+    
+    // Prepare nodes and links
+    this.prepareNodesAndLinks();
+    
+    // Create force simulation
+    this.simulation = d3.forceSimulation(this.nodes)
+      .force('link', d3.forceLink(this.links).id((d: any) => d.id).distance(150))
+      .force('charge', d3.forceManyBody().strength(-300))
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('collision', d3.forceCollide().radius(60));
+    
+    // Create links
+    const link = this.svg.append('g')
+      .attr('class', 'links')
+      .selectAll('line')
+      .data(this.links)
+      .enter().append('line')
+      .attr('stroke', (d: any) => this.getRelationshipColor(d))
+      .attr('stroke-width', 2)
+      .attr('marker-end', 'url(#arrowhead)');
+    
+    // Create edge labels
+    const edgeLabels = this.svg.append('g')
+      .attr('class', 'edge-labels')
+      .selectAll('text')
+      .data(this.links)
+      .enter().append('text')
+      .attr('class', 'edge-label')
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '10px')
+      .attr('fill', '#333')
+      .attr('background', 'white')
+      .text((d: any) => this.getEdgeLabelText(d));
+    
+    // Create nodes
+    const node = this.svg.append('g')
+      .attr('class', 'nodes')
+      .selectAll('g')
+      .data(this.nodes)
+      .enter().append('g')
+      .attr('class', 'node')
+      .call(d3.drag()
+        .on('start', (event: any, d: any) => this.dragstarted(event, d))
+        .on('drag', (event: any, d: any) => this.dragged(event, d))
+        .on('end', (event: any, d: any) => this.dragended(event, d)));
+    
+    // Add circles to nodes
+    node.append('circle')
+      .attr('r', 40)
+      .attr('fill', '#330099')
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 3);
+    
+    // Add text to nodes
+    node.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '0.3em')
+      .attr('font-size', '12px')
+      .attr('fill', 'white')
+      .attr('font-weight', 'bold')
+      .text((d: any) => d.id);
+    
+    // Add connection count
+    node.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '1.5em')
+      .attr('font-size', '10px')
+      .attr('fill', 'white')
+      .text((d: any) => `${d.connections} connections`);
+    
+    // Update positions on simulation tick
+    this.simulation.on('tick', () => {
+      link
+        .attr('x1', (d: any) => d.source.x)
+        .attr('y1', (d: any) => d.source.y)
+        .attr('x2', (d: any) => d.target.x)
+        .attr('y2', (d: any) => d.target.y);
+      
+      edgeLabels
+        .attr('x', (d: any) => (d.source.x + d.target.x) / 2)
+        .attr('y', (d: any) => (d.source.y + d.target.y) / 2);
+      
+      node
+        .attr('transform', (d: any) => `translate(${d.x},${d.y})`);
+    });
+  }
+  
+  prepareNodesAndLinks() {
     const characters = new Set<string>();
     this.characterMap.forEach(rel => {
       characters.add(rel.source);
       characters.add(rel.target);
     });
-    return Array.from(characters);
+    
+    // Create nodes
+    this.nodes = Array.from(characters).map(char => ({
+      id: char,
+      connections: this.getConnectionCount(char)
+    }));
+    
+    // Create links
+    this.links = this.characterMap.map(rel => ({
+      source: rel.source,
+      target: rel.target,
+      relationship: rel
+    }));
   }
 
   getConnectionCount(character: string): number {
@@ -98,67 +244,65 @@ export class CharacterMappingComponent implements OnInit {
     ).length;
   }
 
-  getCharacterPosition(character: string, index: number): { x: number, y: number } {
-    const containerWidth = 800; // Approximate container width
-    const containerHeight = 500; // Approximate container height
-    const nodeWidth = 120;
-    const nodeHeight = 80;
-    
-    // Create a circular layout
-    const totalCharacters = this.getUniqueCharacters().length;
-    const angle = (index * 2 * Math.PI) / totalCharacters;
-    const radius = Math.min(containerWidth, containerHeight) * 0.3;
-    
-    const centerX = containerWidth / 2;
-    const centerY = containerHeight / 2;
-    
-    const x = centerX + radius * Math.cos(angle) - nodeWidth / 2;
-    const y = centerY + radius * Math.sin(angle) - nodeHeight / 2;
-    
-    return { x: Math.max(10, Math.min(x, containerWidth - nodeWidth - 10)), 
-             y: Math.max(10, Math.min(y, containerHeight - nodeHeight - 10)) };
-  }
-
-  getLineCoordinates(relationship: any): { x1: number, y1: number, x2: number, y2: number } {
-    const characters = this.getUniqueCharacters();
-    const sourceIndex = characters.indexOf(relationship.source);
-    const targetIndex = characters.indexOf(relationship.target);
-    
-    const sourcePos = this.getCharacterPosition(relationship.source, sourceIndex);
-    const targetPos = this.getCharacterPosition(relationship.target, targetIndex);
-    
-    // Calculate center points of nodes
-    const x1 = sourcePos.x + 60; // Half of node width
-    const y1 = sourcePos.y + 40; // Half of node height
-    const x2 = targetPos.x + 60;
-    const y2 = targetPos.y + 40;
-    
-    return { x1, y1, x2, y2 };
-  }
-
   getRelationshipColor(relationship: any): string {
-    // Color based on relationship type or default
-    const historyTypes = relationship.history?.map((h: any) => h.type) || [];
+    const rel = relationship.relationship || relationship;
+    const historyTypes = rel.history?.map((h: any) => h.type) || [];
     
     if (historyTypes.includes('conflict')) return '#dc3545';
     if (historyTypes.includes('romance')) return '#e91e63';
     if (historyTypes.includes('friendship')) return '#28a745';
     if (historyTypes.includes('family')) return '#fd7e14';
     
-    return 'var(--color3)'; // Default color
+    return '#330099'; // Default color
   }
 
-  selectCharacterNode(character: string) {
-    this.selectedCharacterNode = character;
-    this.selectedRelationship = null;
+  getEdgeLabelText(link: any): string {
+    const rel = link.relationship;
+    if (!rel.history || rel.history.length === 0) return '';
+    
+    // Get the first history item's selected type
+    const firstHistory = rel.history[0];
+    switch (this.selectedHistoryType) {
+      case 'type':
+        return firstHistory.type || '';
+      case 'step':
+        return firstHistory.step || '';
+      case 'notes':
+        return firstHistory.notes ? firstHistory.notes.substring(0, 20) + '...' : '';
+      default:
+        return '';
+    }
   }
 
-  selectRelationship(relationship: any) {
-    this.selectedRelationship = relationship;
-    this.selectedCharacterNode = '';
+  updateEdgeLabels() {
+    if (!this.svg) return;
+    
+    this.svg.selectAll('.edge-label')
+      .text((d: any) => this.getEdgeLabelText(d));
+  }
+
+  // D3 drag event handlers
+  dragstarted(event: any, d: any) {
+    if (!event.active) this.simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+  }
+
+  dragged(event: any, d: any) {
+    d.fx = event.x;
+    d.fy = event.y;
+  }
+
+  dragended(event: any, d: any) {
+    if (!event.active) this.simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
   }
 
   ngOnDestroy() {
     this.subs.unsubscribe();
+    if (this.simulation) {
+      this.simulation.stop();
+    }
   }
 }
