@@ -196,7 +196,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
         searchString: this.tagSearchText ? this.tagSearchText : '',
         idea: this.projectData.idea ? this.projectData.idea : '',
         genres: this.projectData.genres ? this.projectData.genres.join(", ") : '',
-        story_types: this.projectData.story_types ? this.projectData.story_types.join(", ") : '', 
+        story_types: this.projectData.story_types ? this.projectData.story_types : '', 
         target_age: this.projectData.target_age ? this.projectData.target_age.join(", ") : '',
         target_gender: this.projectData.target_gender ? JSON.stringify(this.projectData.target_gender) : ''
       }).subscribe({
@@ -215,11 +215,11 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
 
   selectedTag(tag: any) {
     console.log(tag)
-    tag = {
-      "type": "urn:tag:keyword:media",
-      "tag_id": "urn:tag:keyword:media:river_adventure",
-      "name": "river adventure"
-    }
+    // tag = {
+    //   "type": "urn:tag:keyword:media",
+    //   "tag_id": "urn:tag:keyword:media:river_adventure",
+    //   "name": "river adventure"
+    // }
     let tag_id = tag.id || tag.tag_id;
     this.subs.add(
       this.tagService.getTagDemographics(tag_id).subscribe({
