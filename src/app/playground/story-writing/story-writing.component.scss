@@ -353,6 +353,8 @@
   border: none;
   background: white;
   border-radius: 8px;
+  direction: ltr;
+  text-align: left;
   
   &:empty::before {
     content: "Begin your story here...";

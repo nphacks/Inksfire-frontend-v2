@@ -21,7 +21,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   isDrawerOpen = false;
   activeHelperTab = 'tags';
   helperTabs = [
-    { id: 'tags', name: 'Tags', icon: 'local_offer' },
+    { id: 'demographics', name: 'Demographics', icon: 'people' },
     { id: 'ai', name: 'AI Help', icon: 'psychology' },
     { id: 'project', name: 'Project Info', icon: 'info' }
   ];
@@ -108,6 +108,10 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
 
   toggleCreateForm() {
     this.showCreateForm = !this.showCreateForm;
+  }
+
+  toggleTagsPopup() {
+    this.showTagsPopup = !this.showTagsPopup;
   }
 
   trackByStoryTitle(index: number, story: any): string {

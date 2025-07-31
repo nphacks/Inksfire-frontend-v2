@@ -153,49 +153,28 @@
     </div>
 
     <div class="drawer-content">
-      <!-- Tags Tab -->
-      <div class="tab-content" *ngIf="activeHelperTab === 'tags'">
-        <div class="tag-search">
-          <div class="search-input-group">
-            <input 
-              type="search" 
-              [(ngModel)]="tagSearchText" 
-              (keyup.enter)="searchTags()" 
-              placeholder="Search for tags..."
-              class="tag-search-input" />
-            <button (click)="searchTags()" class="search-btn">
-              <mat-icon>search</mat-icon>
+      <!-- Demographics Tab -->
+      <div class="tab-content" *ngIf="activeHelperTab === 'demographics'">
+        <div class="demographics-content">
+          <div *ngIf="!projectData.target_demographics && !projectData.projected_demographics" class="no-demographics">
+            <p>Add tags to see demographics</p>
+            <button (click)="toggleTagsPopup()" class="add-tags-btn">
+              <mat-icon>add</mat-icon>
+              Add Tags
             </button>
           </div>
-        </div>
-
-        <div class="searched-tags" *ngIf="(searchedTags?.length ?? 0) > 0">
-          <h4>Suggested Tags</h4>
-          <div class="tags-grid">
-            <button 
-              *ngFor="let tag of searchedTags; trackBy: trackByTagName" 
-              (click)="selectedTag(tag)"
-              class="tag-item">
-              {{ tag?.name }}
-            </button>
-          </div>
-        </div>
-
-        <div class="selected-demographics" *ngIf="selectedTagDemographics?.length > 0">
-          <h4>Selected Tags</h4>
-          <div class="selected-tags">
-            <div 
-              *ngFor="let tag of selectedTagDemographics; trackBy: trackByTagName" 
-              class="selected-tag">
-              <span>{{ tag?.name }}</span>
-              <button (click)="removeSelectedTag(tag)" class="remove-tag">
-                <mat-icon>close</mat-icon>
+          
+          <div *ngIf="projectData.target_demographics || projectData.projected_demographics" class="demographics-display">
+            <h4>Demographics Information</h4>
+            <div class="demographics-data">
+              <p>Demographics data will be displayed here</p>
+              <button (click)="toggleTagsPopup()" class="add-tags-btn">
+                <mat-icon>add</mat-icon>
+                Add More Tags
               </button>
             </div>
           </div>
         </div>
-
-        <button (click)="selectedTag('')" class="test-btn">Test Tag Demographics</button>
       </div>
 
       <!-- AI Help Tab -->
@@ -245,6 +224,61 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tags Popup -->
+  <div class="tags-popup" [class.show]="showTagsPopup">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h3>Add Tags</h3>
+        <button class="close-popup" (click)="toggleTagsPopup()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="popup-body">
+        <div class="tag-search">
+          <div class="search-input-group">
+            <input 
+              type="search" 
+              [(ngModel)]="tagSearchText" 
+              (keyup.enter)="searchTags()" 
+              placeholder="Search for tags..."
+              class="tag-search-input" />
+            <button (click)="searchTags()" class="search-btn">
+              <mat-icon>search</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="searched-tags" *ngIf="(searchedTags?.length ?? 0) > 0">
+          <h4>Suggested Tags</h4>
+          <div class="tags-grid">
+            <button 
+              *ngFor="let tag of searchedTags; trackBy: trackByTagName" 
+              (click)="selectedTag(tag)"
+              class="tag-item">
+              {{ tag?.name }}
+            </button>
+          </div>
+        </div>
+
+        <div class="selected-demographics" *ngIf="selectedTagDemographics?.length > 0">
+          <h4>Selected Tags</h4>
+          <div class="selected-tags">
+            <div 
+              *ngFor="let tag of selectedTagDemographics; trackBy: trackByTagName" 
+              class="selected-tag">
+              <span>{{ tag?.name }}</span>
+              <button (click)="removeSelectedTag(tag)" class="remove-tag">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button (click)="selectedTag('')" class="test-btn">Test Tag Demographics</button>
       </div>
     </div>
   </div>
