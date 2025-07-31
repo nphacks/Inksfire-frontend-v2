@@ -6,7 +6,6 @@ import { TagsService } from '../services/tags.service';
 import { StoryService } from '../services/story.service';
 import { Subscription } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
-import { ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
@@ -76,7 +75,6 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
   aiHelpInstructions = '';
   aiHelpResponse = '';
   private subs = new Subscription();
-  private writingChange$ = new Subject<string>();
   @ViewChild('documentEditor') editor!: ElementRef;
 
   constructor(
@@ -89,6 +87,11 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   ngOnInit() {
+    // Clear any existing timeouts
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
+    
     this.subs.add(
     this.route.queryParams.pipe(
       tap(params => {
@@ -136,7 +139,17 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onDocumentChange(event: any) {
+    // Clear existing timeout to prevent multiple saves
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
+    
     this.activeStory.writing = event.target.innerHTML;
+    
+    // Debounce auto-save to prevent excessive API calls
+    this.saveTimeout = setTimeout(() => {
+      this.saveDraft();
+    }, 2000);
   }
 
   toggleDrawer() {
@@ -186,13 +199,14 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
     )
   }
 
-  onWritingChange() {
-    this.writingChange$.next(this.activeStory?.writing || '');
-  }
-
-
   saveDraft() {
     console.log('Auto-saving draft:', this.activeStory.writing);
+    
+    // Clear timeout since we're saving now
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
+    
     this.subs.add(
       this.storyService.saveStory({
         project_id: this.projectId,
@@ -509,6 +523,11 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
+    // Clear any pending timeouts
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
+    
     this.subs.unsubscribe();
   }
 }

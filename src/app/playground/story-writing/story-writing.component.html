@@ -581,7 +581,7 @@
               [class.selected]="isTagSelected(tag)"
               [class.disabled]="!isTagSelected(tag) && selectedTags.length >= 15">
               <div class="tag-name">{{ tag?.name }}</div>
-              <div class="tag-type" *ngIf="tag?.type">{{ (tag?.type ?? '') | tagType }}</div>
+              <div class="tag-type" *ngIf="tag?.type">{{ tag.type }}</div>
             </div>
           </div>
         </div>

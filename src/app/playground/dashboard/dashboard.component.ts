@@ -193,6 +193,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subs.unsubscribe();
+    
+    // Clear any pending timeouts
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
   }
 }
 

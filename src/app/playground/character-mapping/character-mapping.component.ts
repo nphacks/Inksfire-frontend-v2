@@ -67,12 +67,10 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngAfterViewInit(): void {
-    // Initialize Cytoscape chart when view is ready
-    setTimeout(() => {
-      if (this.activeTab === 'map') {
-        this.initializeCytoscapeChart();
-      }
-    }, 100);
+    // Only initialize when map tab is active
+    if (this.activeTab === 'map' && this.characterMap.length > 0) {
+      setTimeout(() => this.initializeCytoscapeChart(), 100);
+    }
   }
 
   onStoryChange() {
@@ -123,8 +121,14 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
 
   switchTab(tab: string) {
     this.activeTab = tab;
-    if (tab === 'map') {
+    
+    // Only initialize Cytoscape when switching to map tab and data exists
+    if (tab === 'map' && this.characterMap.length > 0) {
       setTimeout(() => this.initializeCytoscapeChart(), 100);
+    } else if (tab !== 'map' && this.cy) {
+      // Destroy Cytoscape when leaving map tab to free memory
+      this.cy.destroy();
+      this.cy = null;
     }
   }
 
@@ -173,7 +177,7 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   initializeCytoscapeChart() {
-    if (!this.d3Container?.nativeElement) {
+    if (!this.d3Container?.nativeElement || this.characterMap.length === 0) {
       console.log('Cytoscape container not ready');
       return;
     }
@@ -181,6 +185,7 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
     // Clear any existing chart
     if (this.cy) {
       this.cy.destroy();
+      this.cy = null;
     }
     
     // Prepare elements for Cytoscape
@@ -345,8 +350,11 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
 
   ngOnDestroy() {
     this.subs.unsubscribe();
+    
+    // Properly destroy Cytoscape instance
     if (this.cy) {
       this.cy.destroy();
+      this.cy = null;
     }
   }
 }

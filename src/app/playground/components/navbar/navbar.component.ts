@@ -59,15 +59,6 @@ export class NavbarComponent {
       '5': 'linear-gradient(45deg, #020414, #eceae5, #330099, #b46b12)'
     };
     
-    // Set the gradient as background for the ::before pseudo-element
-    const gradient = themeColors[themeNumber.toString()] || '';
-    setTimeout(() => {
-      const button = document.querySelector(`.theme-option:nth-child(${themeNumber})::before`) as HTMLElement;
-      if (button) {
-        button.style.background = gradient;
-      }
-    });
-    
-    return gradient;
+    return themeColors[themeNumber.toString()] || '';
   }
 }
