@@ -106,29 +106,7 @@
                 <div class="beat-number">{{ i + 1 }}</div>
               </div>
               <div class="beat-content">
-                <div class="beat-header">
-                  <h4 class="beat-title">{{ beat.title || beat.name || 'Beat ' + (i + 1) }}</h4>
-                  <span class="beat-type" *ngIf="beat.type">{{ beat.type }}</span>
-                </div>
-                <p class="beat-description">{{ beat.description || beat.content }}</p>
-                <div class="beat-meta" *ngIf="beat.duration || beat.page_count">
-                  <span *ngIf="beat.duration" class="meta-item">
-                    <mat-icon>schedule</mat-icon>
-                    {{ beat.duration }}
-                  </span>
-                  <span *ngIf="beat.page_count" class="meta-item">
-                    <mat-icon>description</mat-icon>
-                    {{ beat.page_count }} pages
-                  </span>
-                </div>
-                <div class="beat-characters" *ngIf="beat.characters && beat.characters.length > 0">
-                  <div class="characters-label">Characters:</div>
-                  <div class="character-tags">
-                    <span *ngFor="let character of beat.characters" class="character-tag">
-                      {{ character }}
-                    </span>
-                  </div>
-                </div>
+                <p class="beat-description">{{ beat }}</p>
               </div>
             </div>
           </div>
