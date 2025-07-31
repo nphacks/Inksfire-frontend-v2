@@ -214,19 +214,41 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
     )
   }
 
-  selectedTag(tag: any) {
+  selectTag(tag: any) {
     console.log(tag)
-    // tag = {
-    //   "type": "urn:tag:keyword:media",
-    //   "tag_id": "urn:tag:keyword:media:river_adventure",
-    //   "name": "river adventure"
-    // }
+    
+    // Check if tag is already selected
+    if (this.isTagSelected(tag)) {
+      this.removeSelectedTag(tag);
+      return;
+    }
+    
+    // Add to selected tags
+    this.selectedTags.push(tag);
+    
+    // Fetch demographics for this tag
     let tag_id = tag.id || tag.tag_id;
     this.subs.add(
       this.tagService.getTagDemographics(tag_id).subscribe({
         next: (res: any) => {
           console.log(res)
-          this.selectedTagDemographics = res.demographics
+          // Store demographics with tag info
+          const tagWithDemographics = {
+            ...tag,
+            demographics: res.demographics
+          };
+          
+          // Update the selected tag with demographics
+          const index = this.selectedTags.findIndex(t => (t.id || t.tag_id) === tag_id);
+          if (index !== -1) {
+            this.selectedTags[index] = tagWithDemographics;
+          }
+          
+          // Show current tag demographics
+          this.currentTagDemographics = {
+            tagName: tag.name,
+            ...res.demographics
+          };
         },
         error: (err) => {
           console.error('Error saving story:', err);
@@ -234,21 +256,97 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
       })
     )
   }
+  
+  isTagSelected(tag: any): boolean {
+    const tagId = tag.id || tag.tag_id;
+    return this.selectedTags.some(t => (t.id || t.tag_id) === tagId);
+  }
 
-  removeSelectedTag(tag:any) {
-    this.selectedTagDemographics = this.selectedTagDemographics.filter(
-      (t: any) => t.name !== tag.name
+  removeSelectedTag(tag: any) {
+    const tagId = tag.id || tag.tag_id;
+    this.selectedTags = this.selectedTags.filter(
+      (t: any) => (t.id || t.tag_id) !== tagId
     );
-    this.subs.add(
-      this.projectService.updateProject({ project_id: this.projectId, selected_tags: this.selectedTagDemographics }).subscribe({
-        next: (res: any) => {
-          console.log(res)
-        },
-        error: (err) => {
-          console.error('Error saving story:', err);
-        }
-      })
-    )
+    
+    // Clear current demographics if this was the displayed tag
+    if (this.currentTagDemographics?.tagName === tag.name) {
+      this.currentTagDemographics = null;
+    }
+  }
+  
+  getAgeChartData() {
+    if (!this.currentTagDemographics?.age) return [];
+    
+    return Object.entries(this.currentTagDemographics.age).map(([key, value]) => ({
+      label: key.replace(/_/g, ' ').replace('and', '+'),
+      value: value as number
+    }));
+  }
+  
+  getGenderChartData() {
+    if (!this.currentTagDemographics?.gender) return [];
+    
+    return Object.entries(this.currentTagDemographics.gender).map(([key, value]) => ({
+      label: key.charAt(0).toUpperCase() + key.slice(1),
+      value: value as number
+    }));
+  }
+  
+  getAggregatedAgeData() {
+    if (this.selectedTags.length === 0) return [];
+    
+    const ageGroups = ['24_and_younger', '25_to_29', '30_to_34', '35_to_44', '45_to_54', '55_and_older'];
+    
+    return ageGroups.map(ageGroup => {
+      const total = this.selectedTags.reduce((sum, tag) => {
+        return sum + (tag.demographics?.age?.[ageGroup] || 0);
+      }, 0);
+      const average = total / this.selectedTags.length;
+      
+      return {
+        label: ageGroup.replace(/_/g, ' ').replace('and', '+'),
+        value: average
+      };
+    });
+  }
+  
+  getAggregatedGenderData() {
+    if (this.selectedTags.length === 0) return [];
+    
+    const genders = ['male', 'female'];
+    
+    return genders.map(gender => {
+      const total = this.selectedTags.reduce((sum, tag) => {
+        return sum + (tag.demographics?.gender?.[gender] || 0);
+      }, 0);
+      const average = total / this.selectedTags.length;
+      
+      return {
+        label: gender.charAt(0).toUpperCase() + gender.slice(1),
+        value: average
+      };
+    });
+  }
+  
+  saveDemographics() {
+    const demographicsData = {
+      project_id: this.projectId,
+      target_demographics: {
+        age: this.getAggregatedAgeData().reduce((acc, item) => {
+          const key = item.label.replace(/\s/g, '_').replace('+', 'and').toLowerCase();
+          acc[key] = item.value;
+          return acc;
+        }, {} as any),
+        gender: this.getAggregatedGenderData().reduce((acc, item) => {
+          acc[item.label.toLowerCase()] = item.value;
+          return acc;
+        }, {} as any)
+      },
+      selected_tags: this.selectedTags
+    };
+    
+    console.log('Saving demographics:', demographicsData);
+    // TODO: Make actual service call when ready
   }
 
   onDocumentChange(event: any) {
