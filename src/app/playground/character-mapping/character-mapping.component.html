@@ -137,13 +137,12 @@
     </div>
     
     <ng-template #noBeatsTemplate>
-      <div class="tab-content">
-        <div class="empty-state">
-          <div class="empty-icon">🎬</div>
-          <h3>No story beats found</h3>
-          <p>Story beats will appear here once they are generated for this story</p>
-        </div>
+      <div class="empty-state">
+        <div class="empty-icon">🎬</div>
+        <h3>No story beats found</h3>
+        <p>Story beats will appear here once they are generated for this story</p>
       </div>
+    </ng-template>
 
     <!-- Map Tab -->
     <div class="tab-content" *ngIf="activeTab === 'map'">
@@ -170,7 +169,6 @@
         </div>
       </div>
     </div>
-  </div>
 
   <div class="no-story-selected" *ngIf="!selectedStory">
     <div class="empty-icon">📖</div>
