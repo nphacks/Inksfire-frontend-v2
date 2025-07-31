@@ -199,7 +199,7 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
         {
           selector: 'node',
           style: {
-            'background-color': '#330099',
+            'background-color': '#6366f1',
             'label': 'data(label)',
             'text-valign': 'center',
             'text-halign': 'center',
@@ -221,8 +221,17 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
             'target-arrow-shape': 'triangle',
             'curve-style': 'bezier',
             'label': 'data(label)',
-            'font-size': '10px',
-            'text-rotation': 'autorotate'
+            'font-size': '11px',
+            'text-rotation': 'none',
+            'text-margin-y': -15,
+            'text-background-color': 'white',
+            'text-background-opacity': 0.8,
+            'text-background-padding': '3px',
+            'text-border-color': '#e0e0e0',
+            'text-border-width': 1,
+            'text-border-opacity': 0.5,
+            'text-wrap': 'wrap',
+            'text-max-width': '80px'
           }
         }
       ],
