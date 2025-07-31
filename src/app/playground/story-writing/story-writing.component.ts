@@ -6,11 +6,15 @@ import { TagsService } from '../services/tags.service';
 import { StoryService } from '../services/story.service';
 import { Subscription } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-story-writing',
   templateUrl: './story-writing.component.html',
-  styleUrl: './story-writing.component.scss'
+  styleUrl: './story-writing.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoryWritingComponent implements OnInit, OnDestroy {
 
@@ -66,6 +70,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   aiHelpInstructions = '';
   aiHelpResponse = '';
   private subs = new Subscription();
+  private writingChange$ = new Subject<string>();
 
   constructor(
     private projectService: ProjectService,
@@ -107,7 +112,12 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
         }
       })
     ).subscribe()
-  );
+    );
+    this.subs.add(
+      this.writingChange$.pipe(debounceTime(2000)).subscribe(() => {
+        this.saveDraft();
+      })
+    );
   }
 
   toggleDrawer() {
@@ -152,11 +162,9 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   }
 
   onWritingChange() {
-    clearTimeout(this.saveTimeout);
-    this.saveTimeout = setTimeout(() => {
-      this.saveDraft();
-    }, 2000); // 2 seconds of inactivity
+    this.writingChange$.next(this.activeStory?.writing || '');
   }
+
 
   saveDraft() {
     console.log('Auto-saving draft:', this.activeStory.writing);

@@ -105,7 +105,7 @@
               <!-- AI Assistant Popup -->
               <div 
                 class="ai-assistant-popup" 
-                [class.show]="showAiAssistant"
+                [class.hidden]="!showAiAssistant"
                 [style.top.px]="aiAssistantPosition.top"
                 [style.left.px]="aiAssistantPosition.left">
                 <div class="ai-assistant-content">
