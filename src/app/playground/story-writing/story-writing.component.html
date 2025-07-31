@@ -1,100 +1,201 @@
-<div class="story-writing">
-    <!-- Story writing -->
-    <button>Create Story</button>
-    <form #storyForm="ngForm" (ngSubmit)="createStoryData(storyForm)">
-        <input type="text" name="name" [(ngModel)]="createStory.name" required />
-        <br />
-        <select name="structure" [(ngModel)]="createStory.structure" required>
-            <option *ngFor="let s of storyStructures" [value]="s">{{ s }}</option>
-        </select>
-        <label>Timeline:</label>
-        <select name="timeline" [(ngModel)]="createStory.timeline" required>
-            <option *ngFor="let t of timelines" [value]="t">{{ t }}</option>
-        </select>
-        <button type="submit" [disabled]="storyForm.invalid">Submit</button>
-    </form>
-    <div class="stories" *ngIf="(stories?.length ?? 0) > 0">
-        <div class="story-tab-buttons">
-            @for (tab of stories; track tab?.name) {
-                <button (click)="selectedStory(tab)">{{ tab?.name }}</button>
-            }
+<div class="story-writing-container">
+  <!-- Main Story Writing Area -->
+  <div class="story-writing-main" [class.drawer-open]="isDrawerOpen">
+    <div class="story-header">
+      <h1>Story Writing</h1>
+      <button class="drawer-toggle" (click)="toggleDrawer()">
+        <mat-icon>{{ isDrawerOpen ? 'chevron_right' : 'help_outline' }}</mat-icon>
+        <span>{{ isDrawerOpen ? 'Hide Helpers' : 'Show Helpers' }}</span>
+      </button>
+    </div>
+
+    <!-- Create Story Form -->
+    <div class="create-story-section" *ngIf="!activeStory">
+      <div class="create-story-card">
+        <h2>Create New Story</h2>
+        <form #storyForm="ngForm" (ngSubmit)="createStoryData(storyForm)" class="story-form">
+          <div class="form-group">
+            <label>Story Name</label>
+            <input type="text" name="name" [(ngModel)]="createStory.name" required placeholder="Enter story title..." />
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Structure</label>
+              <select name="structure" [(ngModel)]="createStory.structure" required>
+                <option *ngFor="let s of storyStructures" [value]="s">{{ s }}</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Timeline</label>
+              <select name="timeline" [(ngModel)]="createStory.timeline" required>
+                <option *ngFor="let t of timelines" [value]="t">{{ t }}</option>
+              </select>
+            </div>
+          </div>
+          
+          <button type="submit" [disabled]="storyForm.invalid" class="create-btn">
+            <mat-icon>add</mat-icon>
+            Create Story
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Story Tabs and Writing Area -->
+    <div class="stories-section" *ngIf="(stories?.length ?? 0) > 0">
+      <div class="story-tabs">
+        <button 
+          *ngFor="let tab of stories; trackBy: trackByStoryName" 
+          (click)="selectedStory(tab)"
+          [class.active]="activeStory?.name === tab?.name"
+          class="story-tab">
+          {{ tab?.name }}
+        </button>
+      </div>
+
+      <div class="story-editor" *ngIf="activeStory">
+        <div class="editor-header">
+          <h3>{{ activeStory.name }}</h3>
+          <div class="editor-actions">
+            <button (click)="saveDraft()" class="save-btn">
+              <mat-icon>save</mat-icon>
+              Save Draft
+            </button>
+            <button (click)="submitDraft()" class="submit-btn">
+              <mat-icon>publish</mat-icon>
+              Submit
+            </button>
+          </div>
+        </div>
+        
+        <div class="writing-area">
+          <textarea
+            [(ngModel)]="activeStory.writing"
+            (ngModelChange)="onWritingChange()"
+            placeholder="Begin your story here..."
+            class="story-textarea">
+          </textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collapsible Story Helpers Drawer -->
+  <div class="story-helpers-drawer" [class.open]="isDrawerOpen">
+    <div class="drawer-header">
+      <h3>Story Helpers</h3>
+      <button class="close-drawer" (click)="toggleDrawer()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="drawer-tabs">
+      <button 
+        *ngFor="let tab of helperTabs" 
+        (click)="activeHelperTab = tab.id"
+        [class.active]="activeHelperTab === tab.id"
+        class="helper-tab">
+        <mat-icon>{{ tab.icon }}</mat-icon>
+        {{ tab.name }}
+      </button>
+    </div>
+
+    <div class="drawer-content">
+      <!-- Tags Tab -->
+      <div class="tab-content" *ngIf="activeHelperTab === 'tags'">
+        <div class="tag-search">
+          <div class="search-input-group">
+            <input 
+              type="search" 
+              [(ngModel)]="tagSearchText" 
+              (keyup.enter)="searchTags()" 
+              placeholder="Search for tags..."
+              class="tag-search-input" />
+            <button (click)="searchTags()" class="search-btn">
+              <mat-icon>search</mat-icon>
+            </button>
+          </div>
         </div>
 
-        <div class="story-writing" *ngIf="activeStory">
-            <div class="writing-room">
-            <textarea
-                [(ngModel)]="activeStory.writing"
-                (ngModelChange)="onWritingChange()"
-                placeholder="Write your story">
-            </textarea>
-            </div>
-            <div class="writing-commands">
-            <button (click)="saveDraft()">Save Draft</button>
-            <button>Submit Draft</button>
-            </div>
+        <div class="searched-tags" *ngIf="(searchedTags?.length ?? 0) > 0">
+          <h4>Suggested Tags</h4>
+          <div class="tags-grid">
+            <button 
+              *ngFor="let tag of searchedTags; trackBy: trackByTagName" 
+              (click)="selectedTag(tag)"
+              class="tag-item">
+              {{ tag?.name }}
+            </button>
+          </div>
         </div>
-    </div>
-</div>
-<br><br><br>
-<hr>
-<div class="story-helpers">
-  <div>
-      <h3>Tags</h3>
-      <div class="current-demographics"></div>
-      <div class="selected-demographics"></div>
-      <div class="tag-searching">
-           <div class="search-for-tags">
-              <input type="search" [(ngModel)]="tagSearchText" (keyup.enter)="searchTags()" />
-              <button (click)="searchTags()">Search</button>
+
+        <div class="selected-demographics" *ngIf="selectedTagDemographics?.length > 0">
+          <h4>Selected Tags</h4>
+          <div class="selected-tags">
+            <div 
+              *ngFor="let tag of selectedTagDemographics; trackBy: trackByTagName" 
+              class="selected-tag">
+              <span>{{ tag?.name }}</span>
+              <button (click)="removeSelectedTag(tag)" class="remove-tag">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
           </div>
-          <div class="searched-tags">
-              <div class="tags-list" *ngIf="(searchedTags?.length ?? 0) > 0">
-                  @for (tag of searchedTags; track tag?.name) {
-                      <button (click)="selectedTag(tag)">{{ tag?.name }}</button>
-                  }
-              </div>
-              <button (click)="selectedTag('')">Test tag Demographics</button>
-          </div>
-          <div class="selected-tag-demographics">
-              @for (tag of selectedTagDemographics; track tag?.name) {
-                  <div>{{ tag?.name }} <button (click)="removeSelectedTag(tag)">Remove</button></div>
-              }
-          </div>
+        </div>
+
+        <button (click)="selectedTag('')" class="test-btn">Test Tag Demographics</button>
       </div>
-  </div>
-  <br><br><br>
-  <hr>
-  <div>
-      <h3>AI Help</h3>
-  </div>
-  <br><br><br>
-  <hr>
-  <div>
-      <h3>Project Information</h3>
-      <div>Idea: {{projectData.idea}}</div>
-      <div>Genres:</div>
-      <ul>
-          @for (genre of projectData.genres; track genre) {
-              <li>{{genre}}</li>
-          }
-      </ul>
-      <div>Story Types:</div>
-      <ul>
-          @for (type of projectData.story_types; track type) {
-              <li>{{type}}</li>
-          } 
-      </ul>
-      <div>Target Demographics:</div>
-      <b>Age: </b>
-      <ul>
-          @for (age of projectData.target_demographics?.age; track age) {
-              <span>{{age}}</span> &nbsp;&nbsp;
-          } 
-      </ul>
-      <b>Gender: </b>
-      <ul>
-          <span>{{projectData.target_demographics?.gender?.male}}</span> &nbsp;&nbsp;
-          <span>{{projectData.target_demographics?.gender?.female}}</span> &nbsp;&nbsp;
-      </ul>
+
+      <!-- AI Help Tab -->
+      <div class="tab-content" *ngIf="activeHelperTab === 'ai'">
+        <div class="ai-help-content">
+          <h4>AI Writing Assistant</h4>
+          <p>AI assistance features coming soon...</p>
+        </div>
+      </div>
+
+      <!-- Project Information Tab -->
+      <div class="tab-content" *ngIf="activeHelperTab === 'project'">
+        <div class="project-info">
+          <div class="info-section">
+            <h4>Story Idea</h4>
+            <p>{{ projectData.idea }}</p>
+          </div>
+
+          <div class="info-section" *ngIf="projectData.genres?.length > 0">
+            <h4>Genres</h4>
+            <div class="genre-tags">
+              <span *ngFor="let genre of projectData.genres" class="genre-tag">{{ genre }}</span>
+            </div>
+          </div>
+
+          <div class="info-section" *ngIf="projectData.story_types?.length > 0">
+            <h4>Story Types</h4>
+            <div class="type-tags">
+              <span *ngFor="let type of projectData.story_types" class="type-tag">{{ type }}</span>
+            </div>
+          </div>
+
+          <div class="info-section" *ngIf="projectData.target_demographics">
+            <h4>Target Demographics</h4>
+            <div class="demographics-info">
+              <div *ngIf="projectData.target_demographics?.age?.length > 0">
+                <strong>Age:</strong>
+                <span *ngFor="let age of projectData.target_demographics.age; let last = last">
+                  {{ age }}<span *ngIf="!last">, </span>
+                </span>
+              </div>
+              <div *ngIf="projectData.target_demographics?.gender">
+                <strong>Gender:</strong>
+                Male: {{ projectData.target_demographics.gender.male }}%, 
+                Female: {{ projectData.target_demographics.gender.female }}%
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

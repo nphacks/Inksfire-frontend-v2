@@ -18,6 +18,13 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
   isProjectNew = false
   isProjectPlan = false
   projectData: any = {}
+  isDrawerOpen = false;
+  activeHelperTab = 'tags';
+  helperTabs = [
+    { id: 'tags', name: 'Tags', icon: 'local_offer' },
+    { id: 'ai', name: 'AI Help', icon: 'psychology' },
+    { id: 'project', name: 'Project Info', icon: 'info' }
+  ];
   searchedTags: { name: string; id?: string, tag_id?: string, type?: string }[] = [];
   searchedEntities = []
   searchedTagType = []
@@ -82,11 +89,24 @@ export class StoryWritingComponent implements OnInit, OnDestroy {
           );
         } else {
           this.projectData = res;
+          this.stories = this.projectData.stories || [];
           return []; // No further observable needed
         }
       })
     ).subscribe()
   );
+  }
+
+  toggleDrawer() {
+    this.isDrawerOpen = !this.isDrawerOpen;
+  }
+
+  trackByStoryName(index: number, story: any): string {
+    return story?.name || index;
+  }
+
+  trackByTagName(index: number, tag: any): string {
+    return tag?.name || index;
   }
 
   selectedStory(tab: any) {
