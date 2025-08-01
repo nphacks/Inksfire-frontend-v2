@@ -1,6 +1,15 @@
 <div class="landing-page">
   <!-- Section 1: Hero with Parallax -->
   <section class="hero-section">
+    <!-- Floating Elements -->
+    <div class="floating-elements">
+      <div class="floating-dot dot-1"></div>
+      <div class="floating-dot dot-2"></div>
+      <div class="floating-dot dot-3"></div>
+      <div class="floating-line line-1"></div>
+      <div class="floating-line line-2"></div>
+    </div>
+    
     <div class="parallax-container">
       <div class="parallax-layer" data-speed="0.5">
         <img src="assets/ink-books.png" alt="Ink Books" class="parallax-image ink-books">
@@ -12,31 +21,73 @@
     
     <div class="hero-content">
       <div class="hero-text">
+        <div class="brand-intro">
+          <span class="brand-name">Inksfire</span>
+          <div class="brand-tagline">Where Stories Come to Life</div>
+        </div>
         <h2>Turn Ideas into Stories — Effortlessly.</h2>
         <div class="typing-container">
+          <span class="typing-prefix">Create </span>
           <span class="typing-text">{{ currentTypingText }}</span>
           <span class="cursor" [class.blink]="showCursor">|</span>
+        </div>
+        <div class="hero-cta">
+          <button routerLink="/playground" class="hero-btn primary">
+            <span>Start Creating</span>
+            <div class="btn-glow"></div>
+          </button>
+          <button class="hero-btn secondary" (click)="scrollToSection('what-we-do')">
+            Learn More
+          </button>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Section 2: What We Do -->
-  <section class="what-we-do-section">
+  <section class="what-we-do-section" id="what-we-do">
+    <div class="section-decoration">
+      <div class="decoration-circle circle-1"></div>
+      <div class="decoration-circle circle-2"></div>
+    </div>
     <div class="container">
+      <div class="section-header">
+        <h2>What we do?</h2>
+        <div class="section-subtitle">Empowering creativity through intelligent assistance</div>
+      </div>
       <div class="content-grid">
         <div class="text-content">
-          <h2>What we do?</h2>
-          <p class="main-description">
+          <div class="content-card">
+            <p class="main-description">
             Creativity can never beat AI, as it is individualized. Hence, AI needs to be used to boost creativity. That is what we do.
-          </p>
-          <ul class="features-list">
-            <li>Write stories and scripts</li>
-            <li>Manage development of them</li>
-          </ul>
+            </p>
+            <div class="features-grid">
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <mat-icon>edit_note</mat-icon>
+                </div>
+                <div class="feature-text">
+                  <h4>Write Stories & Scripts</h4>
+                  <p>Craft compelling narratives with AI assistance</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <mat-icon>manage_accounts</mat-icon>
+                </div>
+                <div class="feature-text">
+                  <h4>Manage Development</h4>
+                  <p>Track and organize your creative projects</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="image-content">
-          <img src="assets/background.png" alt="Creative Process" class="feature-image">
+          <div class="image-wrapper">
+            <img src="assets/hand.png" alt="Creative Process" class="feature-image">
+            <div class="image-overlay"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -44,20 +95,27 @@
 
   <!-- Section 3: Powered By -->
   <section class="powered-by-section">
+    <div class="section-bg-pattern"></div>
     <div class="container">
-      <h2>Powered By</h2>
+      <div class="section-header">
+        <h2>Powered By</h2>
+        <div class="section-subtitle">Industry-leading AI and data partners</div>
+      </div>
       <div class="partners-grid">
         <div class="partner-card">
+          <div class="card-glow"></div>
           <img src="assets/qloo-logo.jpg" alt="Qloo" class="partner-logo">
           <h3>Qloo</h3>
           <p>Helps provide in-depth insightful data that helps to guide writing a good story. Stats can be used to either boost the material or challenge the stats.</p>
         </div>
         <div class="partner-card">
+          <div class="card-glow"></div>
           <img src="assets/perplexity-logo.jpg" alt="Perplexity" class="partner-logo">
           <h3>Perplexity</h3>
           <p>Used to make AI driven decisions for better results</p>
         </div>
         <div class="partner-card">
+          <div class="card-glow"></div>
           <img src="assets/gemini-logo.jpg" alt="Gemini" class="partner-logo">
           <h3>Gemini</h3>
           <p>Used to create Generative data for the writers guidance</p>
@@ -69,17 +127,25 @@
   <!-- Section 4: FAQ -->
   <section class="faq-section">
     <div class="container">
+      <div class="section-header">
+        <h2>FAQ</h2>
+        <div class="section-subtitle">Common questions about Inksfire</div>
+      </div>
       <div class="content-grid">
         <div class="image-content">
-          <img src="assets/background.png" alt="FAQ" class="faq-image">
+          <div class="image-wrapper">
+            <img src="assets/faq.png" alt="FAQ" class="faq-image">
+            <div class="image-overlay"></div>
+          </div>
         </div>
         <div class="text-content">
-          <h2>FAQ</h2>
           <div class="faq-list">
             <div class="faq-item" *ngFor="let faq of faqs" (click)="toggleFaq(faq)">
               <div class="faq-question">
                 <h3>{{ faq.question }}</h3>
-                <mat-icon [class.rotated]="faq.isOpen">expand_more</mat-icon>
+                <div class="faq-icon" [class.rotated]="faq.isOpen">
+                  <mat-icon>expand_more</mat-icon>
+                </div>
               </div>
               <div class="faq-answer" [class.open]="faq.isOpen">
                 <p>{{ faq.answer }}</p>
@@ -93,16 +159,30 @@
 
   <!-- Section 5: Contact -->
   <section class="contact-section">
+    <div class="contact-bg-pattern"></div>
     <div class="container">
-      <h2>Contact</h2>
+      <div class="contact-header">
+        <h2>Get in Touch</h2>
+        <p>Ready to transform your storytelling? Let's connect.</p>
+      </div>
       <div class="contact-info">
         <div class="contact-item">
-          <mat-icon>email</mat-icon>
-          <span>contact&#64;inksfire.com</span>
+          <div class="contact-icon">
+            <mat-icon>email</mat-icon>
+          </div>
+          <div class="contact-details">
+            <h4>Email</h4>
+            <span>contact&#64;inksfire.com</span>
+          </div>
         </div>
         <div class="contact-item">
-          <mat-icon>business</mat-icon>
-          <span>LinkedIn: /company/inksfire</span>
+          <div class="contact-icon">
+            <mat-icon>business</mat-icon>
+          </div>
+          <div class="contact-details">
+            <h4>LinkedIn</h4>
+            <span>/company/inksfire</span>
+          </div>
         </div>
       </div>
     </div>
@@ -110,9 +190,12 @@
 
   <!-- Get Started Button -->
   <div class="get-started-floating">
-    <button routerLink="/playground" class="get-started-btn">
+    <div class="floating-btn-container">
+      <button routerLink="/playground" class="get-started-btn">
       <mat-icon>rocket_launch</mat-icon>
       Let's start!
-    </button>
+      </button>
+      <div class="floating-glow"></div>
+    </div>
   </div>
 </div>

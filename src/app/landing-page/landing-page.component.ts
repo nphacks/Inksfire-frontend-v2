@@ -59,6 +59,13 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     this.updateParallax();
   }
 
+  scrollToSection(sectionId: string) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
   private updateParallax() {
     const scrolled = window.pageYOffset;
     const parallaxElements = document.querySelectorAll('.parallax-image');
