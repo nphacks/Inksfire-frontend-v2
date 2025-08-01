@@ -484,6 +484,81 @@
           </div>
         </div>
 
+        <!-- Fourth Row: Tags List -->
+        <div class="popup-row main-content-row" *ngIf="(searchedTags?.length ?? 0) > 0">
+          <div class="two-column-layout">
+            <div class="left-column">
+              <h4>Suggested Tags</h4>
+              <div class="tags-grid">
+                <div 
+                  *ngFor="let tag of searchedTags; trackBy: trackByTagName" 
+                  (click)="selectTag(tag)"
+                  class="tag-item"
+                  [class.selected]="isTagSelected(tag)"
+                  [class.disabled]="!isTagSelected(tag) && selectedTags.length >= 15">
+                  <div class="tag-name">{{ tag?.name }}</div>
+                  <div class="tag-type" *ngIf="tag?.type">{{ tag.type }}</div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Third Row: Individual Tag Demographics -->
+        <div class="popup-row individual-demographics-row" *ngIf="currentTagDemographics">
+          <div class="individual-demographics">
+            <h4>{{ currentTagDemographics.tagName }} Demographics</h4>
+            <div class="demographics-charts">
+              <div class="chart-section">
+                <h5>Age Distribution</h5>
+                <div class="chart-bars">
+                  <div class="bar-item" *ngFor="let item of getAgeChartData()">
+                    <div class="bar-label">{{ item.label }}</div>
+                    <div class="bar-container">
+                      <div 
+                        class="bar-fill"
+                        [class.positive]="item.value >= 0"
+                        [class.negative]="item.value < 0"
+                        [style.width.%]="Math.abs(item.value) * 100">
+                      </div>
+                    </div>
+                    <div 
+                      class="bar-value"
+                      [class.positive]="item.value >= 0"
+                      [class.negative]="item.value < 0">
+                      {{ (item.value * 100).toFixed(0) }}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="chart-section">
+                <h5>Gender Distribution</h5>
+                <div class="chart-bars">
+                  <div class="bar-item" *ngFor="let item of getGenderChartData()">
+                    <div class="bar-label">{{ item.label }}</div>
+                    <div class="bar-container">
+                      <div 
+                        class="bar-fill"
+                        [class.positive]="item.value >= 0"
+                        [class.negative]="item.value < 0"
+                        [style.width.%]="Math.abs(item.value) * 100">
+                      </div>
+                    </div>
+                    <div 
+                      class="bar-value"
+                      [class.positive]="item.value >= 0"
+                      [class.negative]="item.value < 0">
+                      {{ (item.value * 100).toFixed(0) }}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Second Row: Heatmap + Selected Tags + Save Button -->
         <div class="popup-row heatmap-row" *ngIf="selectedTags.length > 0">
           <!-- First Sub-row: Heatmap -->
@@ -561,158 +636,9 @@
           </div>
         </div>
         
-        <!-- Third Row: Individual Tag Demographics -->
-        <div class="popup-row individual-demographics-row" *ngIf="currentTagDemographics">
-          <div class="individual-demographics">
-            <h4>{{ currentTagDemographics.tagName }} Demographics</h4>
-            <div class="demographics-charts">
-              <div class="chart-section">
-                <h5>Age Distribution</h5>
-                <div class="chart-bars">
-                  <div class="bar-item" *ngFor="let item of getAgeChartData()">
-                    <div class="bar-label">{{ item.label }}</div>
-                    <div class="bar-container">
-                      <div 
-                        class="bar-fill"
-                        [class.positive]="item.value >= 0"
-                        [class.negative]="item.value < 0"
-                        [style.width.%]="Math.abs(item.value) * 100">
-                      </div>
-                    </div>
-                    <div 
-                      class="bar-value"
-                      [class.positive]="item.value >= 0"
-                      [class.negative]="item.value < 0">
-                      {{ (item.value * 100).toFixed(0) }}%
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="chart-section">
-                <h5>Gender Distribution</h5>
-                <div class="chart-bars">
-                  <div class="bar-item" *ngFor="let item of getGenderChartData()">
-                    <div class="bar-label">{{ item.label }}</div>
-                    <div class="bar-container">
-                      <div 
-                        class="bar-fill"
-                        [class.positive]="item.value >= 0"
-                        [class.negative]="item.value < 0"
-                        [style.width.%]="Math.abs(item.value) * 100">
-                      </div>
-                    </div>
-                    <div 
-                      class="bar-value"
-                      [class.positive]="item.value >= 0"
-                      [class.negative]="item.value < 0">
-                      {{ (item.value * 100).toFixed(0) }}%
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
         
-        <!-- Fourth Row: Tags List -->
-        <!-- Main Content Row: Two Columns -->
-        <div class="popup-row main-content-row" *ngIf="(searchedTags?.length ?? 0) > 0">
-          <div class="two-column-layout">
-            <!-- Left Column: Tags List -->
-            <div class="left-column">
-              <h4>Suggested Tags</h4>
-              <div class="tags-grid">
-                <div 
-                  *ngFor="let tag of searchedTags; trackBy: trackByTagName" 
-                  (click)="selectTag(tag)"
-                  class="tag-item"
-                  [class.selected]="isTagSelected(tag)"
-                  [class.disabled]="!isTagSelected(tag) && selectedTags.length >= 15">
-                  <div class="tag-name">{{ tag?.name }}</div>
-                  <div class="tag-type" *ngIf="tag?.type">{{ tag.type }}</div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Right Column: Demographics and Selected Tags -->
-            <div class="right-column">
-              <!-- Individual Demographics -->
-              <div class="individual-demographics" *ngIf="currentTagDemographics">
-                <h4>{{ currentTagDemographics.tagName }} Demographics</h4>
-                <div class="demographics-charts">
-                  <div class="chart-section">
-                    <h5>Age Distribution</h5>
-                    <div class="chart-bars">
-                      <div class="bar-item" *ngFor="let item of getAgeChartData()">
-                        <div class="bar-label">{{ item.label }}</div>
-                        <div class="bar-container">
-                          <div 
-                            class="bar-fill"
-                            [class.positive]="item.value >= 0"
-                            [class.negative]="item.value < 0"
-                            [style.width.%]="Math.abs(item.value) * 100">
-                          </div>
-                        </div>
-                        <div 
-                          class="bar-value"
-                          [class.positive]="item.value >= 0"
-                          [class.negative]="item.value < 0">
-                          {{ (item.value * 100).toFixed(0) }}%
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="chart-section">
-                    <h5>Gender Distribution</h5>
-                    <div class="chart-bars">
-                      <div class="bar-item" *ngFor="let item of getGenderChartData()">
-                        <div class="bar-label">{{ item.label }}</div>
-                        <div class="bar-container">
-                          <div 
-                            class="bar-fill"
-                            [class.positive]="item.value >= 0"
-                            [class.negative]="item.value < 0"
-                            [style.width.%]="Math.abs(item.value) * 100">
-                          </div>
-                        </div>
-                        <div 
-                          class="bar-value"
-                          [class.positive]="item.value >= 0"
-                          [class.negative]="item.value < 0">
-                          {{ (item.value * 100).toFixed(0) }}%
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Selected Tags -->
-              <div class="selected-tags-section" *ngIf="selectedTags.length > 0">
-                <h4>Selected Tags ({{ selectedTags.length }}/15)</h4>
-                <div class="selected-tags">
-                  <div 
-                    *ngFor="let tag of selectedTags; trackBy: trackByTagName" 
-                    class="selected-tag">
-                    <span>{{ tag?.name }}</span>
-                    <button (click)="removeSelectedTag(tag)" class="remove-tag">
-                      <mat-icon>close</mat-icon>
-                    </button>
-                  </div>
-                </div>
-                
-                <button 
-                  (click)="saveDemographics()" 
-                  class="save-demographics-btn"
-                  [disabled]="selectedTags.length === 0">
-                  Save as Target Demographics
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        
+        
         
         <!-- Bottom Row: Combined Demographics -->
       </div>

@@ -86,7 +86,7 @@ export class AnalysisComponent implements OnInit, OnDestroy {
     this.projectService.compareMovies(entities).subscribe({
       next: (res: any) => {
         this.comparisonData = res.movie_compare.tags
-        console.log(res.movie_compare)
+        console.log(res.movie_compare.tags)
       },
       error(err) {
         console.error(err)
@@ -137,7 +137,7 @@ export class AnalysisComponent implements OnInit, OnDestroy {
     if (!comparisonData || !comparisonData.tags) {
       return [];
     }
-    
+    console.log('HERE _____', comparisonData)
     // Return top 15 tags sorted by score
     return comparisonData.tags
       .sort((a: any, b: any) => (b.query?.score || 0) - (a.query?.score || 0))
