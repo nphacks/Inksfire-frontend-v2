@@ -15,6 +15,7 @@ export class AnalysisComponent implements OnInit, OnDestroy {
   comparisonData: any = null;
   hasSearched: boolean = false;
   isComparing: boolean = false;
+  isSearchResultsCollapsed: boolean = false;
   private subs = new Subscription();
 
   constructor(private projectService: ProjectService) {}
