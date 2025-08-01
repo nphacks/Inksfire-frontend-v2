@@ -41,6 +41,8 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
   selectedCharacter: any = null;
   selectedActor: any = null;
   actorSearchQuery: string = '';
+  actorSearchResults: any[] = [];
+  selectedSearchedActor: any = null;
   private subs = new Subscription();
   private cy: any;
 
