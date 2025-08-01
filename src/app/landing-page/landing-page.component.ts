@@ -122,11 +122,4 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  scrollToSection(sectionId: string) {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
 }
