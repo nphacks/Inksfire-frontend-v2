@@ -373,43 +373,88 @@
 
       <!-- Project Information Tab -->
       <div class="tab-content" *ngIf="activeHelperTab === 'project'">
-        <div class="project-info">
+        <div class="project-info" *ngIf="projectData; else emptyProjectInfo">
+          <div class="project-info-header">
+            <mat-icon>folder</mat-icon>
+            <h3>{{ projectData.name || 'Untitled Project' }}</h3>
+          </div>
+
           <div class="info-section">
-            <h4>Story Idea</h4>
-            <p>{{ projectData.idea }}</p>
-          </div>
-
-          <div class="info-section" *ngIf="projectData.genres?.length > 0">
-            <h4>Genres</h4>
-            <div class="genre-tags">
-              <span *ngFor="let genre of projectData.genres" class="genre-tag">{{ genre }}</span>
+            <div class="info-section-header">
+              <mat-icon>lightbulb</mat-icon>
+              <h4>Story Idea</h4>
+            </div>
+            <div class="info-section-content">
+              <p>{{ projectData.idea || 'No story idea provided' }}</p>
             </div>
           </div>
 
-          <div class="info-section" *ngIf="projectData.story_types?.length > 0">
-            <h4>Story Types</h4>
-            <div class="type-tags">
-              <span *ngFor="let type of projectData.story_types" class="type-tag">{{ type }}</span>
+          <div class="info-section" *ngIf="projectData.genres?.length > 0 || projectData.story_types">
+            <div class="info-section-header">
+              <mat-icon>category</mat-icon>
+              <h4>Categories</h4>
             </div>
-          </div>
-
-          <div class="info-section" *ngIf="projectData.target_demographics">
-            <h4>Target Demographics</h4>
-            <div class="demographics-info">
-              <div *ngIf="projectData.target_demographics?.age?.length > 0">
-                <strong>Age:</strong>
-                <span *ngFor="let age of projectData.target_demographics.age; let last = last">
-                  {{ age }}<span *ngIf="!last">, </span>
-                </span>
+            <div class="info-section-content">
+              <div *ngIf="projectData.genres?.length > 0" style="margin-bottom: 1rem;">
+                <strong style="display: block; margin-bottom: 0.5rem; color: var(--color1);">Genres:</strong>
+                <div class="genre-tags">
+                  <span *ngFor="let genre of projectData.genres" class="genre-tag">{{ genre }}</span>
+                </div>
               </div>
-              <div *ngIf="projectData.target_demographics?.gender">
-                <strong>Gender:</strong>
-                Male: {{ projectData.target_demographics.gender.male }}%, 
-                Female: {{ projectData.target_demographics.gender.female }}%
+              <div *ngIf="projectData.story_types">
+                <strong style="display: block; margin-bottom: 0.5rem; color: var(--color1);">Story Type:</strong>
+                <div class="type-tags">
+                  <span class="type-tag">{{ projectData.story_types }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section" *ngIf="projectData.author">
+            <div class="info-section-header">
+              <mat-icon>person</mat-icon>
+              <h4>Author Information</h4>
+            </div>
+            <div class="info-section-content">
+              <div class="demographics-item">
+                <mat-icon>edit</mat-icon>
+                <strong>Author:</strong>
+                <span>{{ projectData.author }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section" *ngIf="stories?.length > 0">
+            <div class="info-section-header">
+              <mat-icon>analytics</mat-icon>
+              <h4>Project Statistics</h4>
+            </div>
+            <div class="info-section-content">
+              <div class="project-stats">
+                <div class="stat-card">
+                  <div class="stat-number">{{ stories.length }}</div>
+                  <div class="stat-label">Stories</div>
+                </div>
+                <div class="stat-card" *ngIf="projectData.genres?.length > 0">
+                  <div class="stat-number">{{ projectData.genres.length }}</div>
+                  <div class="stat-label">Genres</div>
+                </div>
+                <div class="stat-card" *ngIf="activeStory?.selected_tags?.length > 0">
+                  <div class="stat-number">{{ activeStory.selected_tags.length }}</div>
+                  <div class="stat-label">Tags</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        
+        <ng-template #emptyProjectInfo>
+          <div class="empty-project-info">
+            <mat-icon>folder_off</mat-icon>
+            <h4>No Project Information</h4>
+            <p>Project details will appear here once loaded</p>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>
