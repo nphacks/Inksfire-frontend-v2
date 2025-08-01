@@ -29,12 +29,15 @@
            (click)="toggleResultSelection(result, i)"
            [class.selected]="isResultSelected(result)"
            [class.disabled]="!isResultSelected(result) && selectedResults.length >= 2">
+        <div class="result-image" *ngIf="result.properties?.image?.url">
+          <img [src]="result.properties.image.url" [alt]="result.name" />
+        </div>
         <div class="result-header">
-          <h4>{{ result.title || 'Untitled' }}</h4>
-          <div class="result-type">{{ result.type || 'Unknown' }}</div>
+          <h4>{{ result.name || 'Untitled' }}</h4>
+          <div class="result-type">{{ getEntityType(result.types) }}</div>
         </div>
         <div class="result-preview">
-          <p>{{ result.description || 'No description available' }}</p>
+          <p>{{ result.properties?.description || result.properties?.short_description || 'No description available' }}</p>
         </div>
         <div class="selection-indicator" *ngIf="isResultSelected(result)">
           <mat-icon>check_circle</mat-icon>
@@ -68,16 +71,38 @@
         </div>
         <div class="card-content">
           <div class="metadata-section">
-            <h5>{{ selectedResults[0].title || 'Untitled' }}</h5>
+            <div class="result-image-large" *ngIf="selectedResults[0].properties?.image?.url">
+              <img [src]="selectedResults[0].properties.image.url" [alt]="selectedResults[0].name" />
+            </div>
+            <h5>{{ selectedResults[0].name || 'Untitled' }}</h5>
+            <div class="metadata-item" *ngIf="selectedResults[0].properties?.release_year">
+              <strong>Release Year:</strong>
+              <span>{{ selectedResults[0].properties.release_year }}</span>
+            </div>
+            <div class="metadata-item" *ngIf="selectedResults[0].properties?.content_rating">
+              <strong>Rating:</strong>
+              <span>{{ selectedResults[0].properties.content_rating }}</span>
+            </div>
             <div class="metadata-item">
               <strong>Type:</strong>
-              <span>{{ selectedResults[0].type || 'Unknown' }}</span>
+              <span>{{ getEntityType(selectedResults[0].types) }}</span>
             </div>
             <div class="metadata-item">
               <strong>Description:</strong>
-              <span>{{ selectedResults[0].description || 'No description' }}</span>
+              <span>{{ selectedResults[0].properties?.description || selectedResults[0].properties?.short_description || 'No description' }}</span>
             </div>
-            <!-- Additional metadata will be populated here -->
+            <div class="metadata-item" *ngIf="selectedResults[0].properties?.external?.imdb?.user_rating">
+              <strong>IMDB Rating:</strong>
+              <span>{{ selectedResults[0].properties.external.imdb.user_rating }}/10 ({{ selectedResults[0].properties.external.imdb.user_rating_count | number }} votes)</span>
+            </div>
+            <div class="metadata-item" *ngIf="selectedResults[0].properties?.production_company">
+              <strong>Production:</strong>
+              <span>{{ selectedResults[0].properties.production_company }}</span>
+            </div>
+            <div class="metadata-item" *ngIf="selectedResults[0].popularity">
+              <strong>Popularity:</strong>
+              <span>{{ (selectedResults[0].popularity * 100).toFixed(1) }}%</span>
+            </div>
           </div>
         </div>
       </div>
@@ -92,16 +117,38 @@
         </div>
         <div class="card-content">
           <div class="metadata-section">
-            <h5>{{ selectedResults[1].title || 'Untitled' }}</h5>
+            <div class="result-image-large" *ngIf="selectedResults[1].properties?.image?.url">
+              <img [src]="selectedResults[1].properties.image.url" [alt]="selectedResults[1].name" />
+            </div>
+            <h5>{{ selectedResults[1].name || 'Untitled' }}</h5>
+            <div class="metadata-item" *ngIf="selectedResults[1].properties?.release_year">
+              <strong>Release Year:</strong>
+              <span>{{ selectedResults[1].properties.release_year }}</span>
+            </div>
+            <div class="metadata-item" *ngIf="selectedResults[1].properties?.content_rating">
+              <strong>Rating:</strong>
+              <span>{{ selectedResults[1].properties.content_rating }}</span>
+            </div>
             <div class="metadata-item">
               <strong>Type:</strong>
-              <span>{{ selectedResults[1].type || 'Unknown' }}</span>
+              <span>{{ getEntityType(selectedResults[1].types) }}</span>
             </div>
             <div class="metadata-item">
               <strong>Description:</strong>
-              <span>{{ selectedResults[1].description || 'No description' }}</span>
+              <span>{{ selectedResults[1].properties?.description || selectedResults[1].properties?.short_description || 'No description' }}</span>
             </div>
-            <!-- Additional metadata will be populated here -->
+            <div class="metadata-item" *ngIf="selectedResults[1].properties?.external?.imdb?.user_rating">
+              <strong>IMDB Rating:</strong>
+              <span>{{ selectedResults[1].properties.external.imdb.user_rating }}/10 ({{ selectedResults[1].properties.external.imdb.user_rating_count | number }} votes)</span>
+            </div>
+            <div class="metadata-item" *ngIf="selectedResults[1].properties?.production_company">
+              <strong>Production:</strong>
+              <span>{{ selectedResults[1].properties.production_company }}</span>
+            </div>
+            <div class="metadata-item" *ngIf="selectedResults[1].popularity">
+              <strong>Popularity:</strong>
+              <span>{{ (selectedResults[1].popularity * 100).toFixed(1) }}%</span>
+            </div>
           </div>
         </div>
       </div>

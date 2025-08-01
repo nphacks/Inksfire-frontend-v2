@@ -61,13 +61,13 @@ export class AnalysisComponent implements OnInit, OnDestroy {
 
   isResultSelected(result: any): boolean {
     return this.selectedResults.some(selected => 
-      selected.id === result.id || selected.title === result.title
+      selected.entity_id === result.entity_id || selected.name === result.name
     );
   }
 
   removeResultFromSelection(result: any): void {
     this.selectedResults = this.selectedResults.filter(selected => 
-      selected.id !== result.id && selected.title !== result.title
+      selected.entity_id !== result.entity_id && selected.name !== result.name
     );
     this.comparisonData = null;
   }
