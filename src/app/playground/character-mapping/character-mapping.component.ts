@@ -361,4 +361,53 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
       this.cy = null;
     }
   }
+
+  selectSearchedActor(actor: any) {
+    this.selectedSearchedActor = actor;
+    console.log('Selected actor for details:', actor);
+  }
+
+  addActorAsOption(actor: any) {
+    if (!this.selectedCharacter || !actor) return;
+    
+    // Initialize actors array if it doesn't exist
+    if (!this.selectedCharacter.actors) {
+      this.selectedCharacter.actors = [];
+    }
+    
+    // Check if actor is already added
+    const existingActor = this.selectedCharacter.actors.find((a: any) => a.entity_id === actor.entity_id);
+    if (existingActor) {
+      console.log('Actor already added to character');
+      return;
+    }
+    
+    // Add actor to character's actors list
+    this.selectedCharacter.actors.push({
+      name: actor.name,
+      entity_id: actor.entity_id,
+      popularity: actor.popularity,
+      disambiguation: actor.disambiguation
+    });
+    
+    console.log('Added actor as option:', actor.name, 'to character:', this.selectedCharacter.name);
+    
+    // TODO: Make service call to save actor assignment
+    // this.characterService.assignActorToCharacter(this.selectedCharacter.id, actor.entity_id).subscribe(...)
+    
+    // Close the drawer after adding
+    this.closeActorOptions();
+  }
+
+  getEntityTypeLabel(type: string): string {
+    if (!type) return 'Unknown';
+    
+    // Convert URN types to readable labels
+    if (type.includes('tv_show')) return 'TV Show';
+    if (type.includes('movie')) return 'Movie';
+    if (type.includes('book')) return 'Book';
+    if (type.includes('game')) return 'Game';
+    
+    return type.split(':').pop() || 'Unknown';
+  }
 }
