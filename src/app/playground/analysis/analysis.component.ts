@@ -98,6 +98,10 @@ export class AnalysisComponent implements OnInit, OnDestroy {
     this.comparisonData = null;
   }
 
+  toggleSearchResults(): void {
+    this.isSearchResultsCollapsed = !this.isSearchResultsCollapsed;
+  }
+
   getEntityType(types: string | string[]): string {
     if (!types) return 'Unknown';
     
