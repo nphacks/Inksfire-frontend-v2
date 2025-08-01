@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { BackendHealthService } from './services/backend-health.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-landing-page',
@@ -37,21 +39,53 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     }
   ];
   
+  // Backend loading state
+  isBackendLoading = true;
+  
   private typingInterval: any;
   private cursorInterval: any;
+  private subs = new Subscription();
+
+  constructor(private backendHealthService: BackendHealthService) {}
 
   ngOnInit() {
+    this.checkBackendHealth();
     this.startTypingAnimation();
     this.startCursorBlink();
   }
 
   ngOnDestroy() {
+    this.subs.unsubscribe();
     if (this.typingInterval) {
       clearInterval(this.typingInterval);
     }
     if (this.cursorInterval) {
       clearInterval(this.cursorInterval);
     }
+  }
+
+  private checkBackendHealth() {
+    // Try to check backend health, fallback to simulation
+    this.subs.add(
+      this.backendHealthService.checkBackendHealth().subscribe({
+        next: (response) => {
+          console.log('Backend is ready:', response);
+          this.isBackendLoading = false;
+        },
+        error: (error) => {
+          console.log('Backend health check failed, using simulation:', error);
+          // Fallback to simulation
+          this.subs.add(
+            this.backendHealthService.simulateBackendWakeup().subscribe({
+              next: (response) => {
+                console.log('Backend simulation complete:', response);
+                this.isBackendLoading = false;
+              }
+            })
+          );
+        }
+      })
+    );
   }
 
   @HostListener('window:scroll', ['$event'])

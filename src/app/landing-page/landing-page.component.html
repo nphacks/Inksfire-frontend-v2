@@ -1,4 +1,24 @@
 <div class="landing-page">
+  <!-- Backend Loading Overlay -->
+  <div class="backend-loading-overlay" *ngIf="isBackendLoading">
+    <div class="loading-content">
+      <div class="loading-icon">
+        <img src="assets/waiting.svg" alt="Loading" class="waiting-icon">
+      </div>
+      <div class="loading-text">
+        <p class="loading-message">
+          Backend is hosted on Free Tier of Render which takes few seconds to wake up the server.
+        </p>
+        <p class="loading-apology">
+          <strong>Sorry for inconvenience.</strong>
+        </p>
+        <p class="loading-advice">
+          Take a long breathe!
+        </p>
+      </div>
+    </div>
+  </div>
+
   <!-- Section 1: Hero with Parallax -->
   <section class="hero-section">
     <!-- Floating Elements -->
