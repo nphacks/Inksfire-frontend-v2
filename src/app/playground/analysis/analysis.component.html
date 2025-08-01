@@ -22,8 +22,13 @@
 
   <!-- Search Results -->
   <div class="search-results-section">
-    <h3>Search Results</h3>
-    <div class="results-container">
+    <div class="search-results-header" (click)="toggleSearchResults()">
+      <h3>Search Results</h3>
+      <button class="collapse-btn">
+        <mat-icon>{{ isSearchResultsCollapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
+      </button>
+    </div>
+    <div class="results-container" [class.collapsed]="isSearchResultsCollapsed">
       <div class="result-item" 
            *ngFor="let result of searchResults; let i = index"
            (click)="toggleResultSelection(result, i)"
@@ -38,8 +43,6 @@
         </div>
         <div class="result-preview">
           <p>{{ result.properties?.description || result.properties?.short_description || 'No description available' }}</p>
-        </div>
-        <div class="selection-indicator" *ngIf="isResultSelected(result)">
           <mat-icon>check_circle</mat-icon>
         </div>
       </div>
