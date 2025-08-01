@@ -155,6 +155,8 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
     this.isActorOptionsVisible = false;
     this.selectedCharacter = null;
     this.actorSearchQuery = '';
+    this.actorSearchResults = [];
+    this.selectedSearchedActor = null;
   }
 
   showActorInfoDrawer(actor: any) {
