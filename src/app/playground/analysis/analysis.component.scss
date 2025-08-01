@@ -433,6 +433,87 @@
   }
 }
 
+.tags-comparison {
+  h5 {
+    color: var(--color1);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+  }
+}
+
+.tags-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.tag-comparison-item {
+  background: #f8f9ff;
+  border: 1px solid #e0e7ff;
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #f0f4ff;
+    border-color: #330099;
+  }
+}
+
+.tag-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  
+  .tag-name {
+    color: var(--color1);
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .tag-score {
+    color: #666;
+    font-size: 0.8rem;
+    background: #e0e7ff;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+}
+
+.tag-popularity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.popularity-bar {
+  flex: 1;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.popularity-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #330099, #4a0db8);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.popularity-text {
+  color: #330099;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 50px;
+  text-align: right;
+}
+
 .empty-state,
 .no-comparison {
   text-align: center;

@@ -164,14 +164,27 @@
         </div>
         <div class="card-content">
           <div class="comparison-data" *ngIf="comparisonData; else noComparison">
-            <!-- Comparison data will be populated here -->
-            <div class="comparison-item">
-              <strong>Similarity Score:</strong>
-              <span>{{ comparisonData.similarity || 'N/A' }}</span>
-            </div>
-            <div class="comparison-item">
-              <strong>Key Differences:</strong>
-              <span>{{ comparisonData.differences || 'N/A' }}</span>
+            <div class="tags-comparison">
+              <h5>Common Tags (Top 15)</h5>
+              <div class="tags-list">
+                <div 
+                  *ngFor="let tag of getTopTags(comparisonData)" 
+                  class="tag-comparison-item">
+                  <div class="tag-info">
+                    <span class="tag-name">{{ tag.name }}</span>
+                    <span class="tag-score">Score: {{ (tag.query.score * 100).toFixed(1) }}%</span>
+                  </div>
+                  <div class="tag-popularity">
+                    <div class="popularity-bar">
+                      <div 
+                        class="popularity-fill" 
+                        [style.width.%]="tag.popularity * 100">
+                      </div>
+                    </div>
+                    <span class="popularity-text">{{ (tag.popularity * 100).toFixed(2) }}%</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           

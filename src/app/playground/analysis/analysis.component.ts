@@ -132,6 +132,17 @@ export class AnalysisComponent implements OnInit, OnDestroy {
     
     return 'Unknown';
   }
+
+  getTopTags(comparisonData: any): any[] {
+    if (!comparisonData || !comparisonData.tags) {
+      return [];
+    }
+    
+    // Return top 15 tags sorted by score
+    return comparisonData.tags
+      .sort((a: any, b: any) => (b.query?.score || 0) - (a.query?.score || 0))
+      .slice(0, 15);
+  }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
