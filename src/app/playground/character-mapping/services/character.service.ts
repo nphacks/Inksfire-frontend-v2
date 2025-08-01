@@ -9,10 +9,12 @@ import { HttpClient } from '@angular/common/http';
 export class CharacterService {
 
   constructor(private http: HttpClient) {}
-  
-  fetchCharacterMapping(project_id: string, story_id: string) {
-    return this.http.get(`${environment.apiUrl}/project/get-project`, {
-      params: { project_id }
-    });  
+
+  searchForActors(data: any) {
+    return this.http.get(`${environment.apiUrl}/qloo/get-actor-info`, {
+      params: { movie_search_Str: data }
+    });   
   }
 }
+
+

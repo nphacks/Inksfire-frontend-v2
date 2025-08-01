@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } fr
 import { ProjectDataService } from '../services/project-data.service';
 import { Subscription } from 'rxjs';
 import cytoscape from 'cytoscape';
+import { CharacterService } from './services/character.service';
 
 interface Character {
   name: string;
@@ -24,7 +25,10 @@ interface StoryBeat {
 })
 export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  constructor(private projectDataService: ProjectDataService) {}
+  constructor(
+    private projectDataService: ProjectDataService,
+    private characterService: CharacterService
+  ) {}
   
   @ViewChild('d3Container', { static: false }) d3Container!: ElementRef;
   
@@ -177,6 +181,17 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
     if (this.selectedCharacter && this.actorSearchQuery.trim()) {
       console.log('Character context:', this.selectedCharacter.description);
       console.log('User Search:', this.actorSearchQuery);
+
+      let searchQuery = "These user requirements for actor. - Character context: " + this.selectedCharacter.description + " - User Search: " + this.actorSearchQuery
+
+      this.characterService.searchForActors(searchQuery).subscribe({
+        next: (res) => {
+          console.log(res)
+        }, 
+        error(err) {
+          console.error(err)
+        },
+      })
     }
   }
 
