@@ -80,13 +80,13 @@ export class AnalysisComponent implements OnInit, OnDestroy {
     if (this.selectedResults.length !== 2) {
       return;
     }
-    this.clearComparison()
+    
     this.isComparing = true;
-    console.log('Comparing results:', this.selectedResults);
     let entities = [this.selectedResults[0]["entity_id"], this.selectedResults[1]["entity_id"]]
     this.projectService.compareMovies(entities).subscribe({
       next: (res: any) => {
-        this.searchResults = res.movie_compare
+        this.comparisonData = res.movie_compare.tags
+        console.log(res.movie_compare)
       },
       error(err) {
         console.error(err)
