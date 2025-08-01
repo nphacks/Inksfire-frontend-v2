@@ -3,7 +3,7 @@
   <div class="backend-loading-overlay" *ngIf="isBackendLoading">
     <div class="loading-content">
       <div class="loading-icon">
-        <img src="assets/waiting.svg" alt="Loading" class="waiting-icon">
+        <img src="assets/waiting.png" alt="Loading" class="waiting-icon">
       </div>
       <div class="loading-text">
         <p class="loading-message">
@@ -52,7 +52,7 @@
           <span class="cursor" [class.blink]="showCursor">|</span>
         </div>
         <div class="hero-cta">
-          <button routerLink="/playground" class="hero-btn primary">
+          <button routerLink="/playground/dashboard" class="hero-btn primary">
             <span>Start Creating</span>
             <div class="btn-glow"></div>
           </button>
@@ -211,7 +211,7 @@
   <!-- Get Started Button -->
   <div class="get-started-floating">
     <div class="floating-btn-container">
-      <button routerLink="/playground" class="get-started-btn">
+      <button routerLink="/playground/dashboard" class="get-started-btn">
       <mat-icon>rocket_launch</mat-icon>
       Let's start!
       </button>
