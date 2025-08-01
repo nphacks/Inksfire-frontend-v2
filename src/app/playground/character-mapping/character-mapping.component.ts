@@ -185,8 +185,9 @@ export class CharacterMappingComponent implements OnInit, AfterViewInit, OnDestr
       let searchQuery = "These user requirements for actor. - Character context: " + this.selectedCharacter.description + " - User Search: " + this.actorSearchQuery
 
       this.characterService.searchForActors(searchQuery).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           console.log(res)
+          this.actorSearchResults = res.actors_information
         }, 
         error(err) {
           console.error(err)

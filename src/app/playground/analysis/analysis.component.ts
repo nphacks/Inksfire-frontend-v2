@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { ProjectService } from '../services/project.service';
 
 @Component({
   selector: 'app-analysis',
@@ -16,7 +17,7 @@ export class AnalysisComponent implements OnInit, OnDestroy {
   isComparing: boolean = false;
   private subs = new Subscription();
 
-  constructor() {}
+  constructor(private projectService: ProjectService) {}
 
   ngOnInit(): void {
     // Component initialization
@@ -31,7 +32,15 @@ export class AnalysisComponent implements OnInit, OnDestroy {
     this.hasSearched = true;
     
     // TODO: Replace with actual service call
-    // this.analysisService.search(this.searchQuery).subscribe(...)
+    this.projectService.searchForMovies(this.searchQuery).subscribe({
+      next: (res: any) => {
+        console.log(res.movie_information)
+        this.searchResults = res.movie_information
+      },
+      error(err) {
+        console.error(err)
+      },
+    })
     
     // Clear previous results and comparison
     this.searchResults = [];
@@ -75,19 +84,18 @@ export class AnalysisComponent implements OnInit, OnDestroy {
     if (this.selectedResults.length !== 2) {
       return;
     }
-
+    this.clearComparison()
     this.isComparing = true;
     console.log('Comparing results:', this.selectedResults);
-    
-    // TODO: Replace with actual service call
-    // this.analysisService.compare(this.selectedResults[0], this.selectedResults[1]).subscribe(...)
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      this.isComparing = false;
-      // TODO: Set actual comparison data from service response
-      this.comparisonData = null;
-    }, 1000);
+    let entities = [this.selectedResults[0]["entity_id"], this.selectedResults[1]["entity_id"]]
+    this.projectService.compareMovies(entities).subscribe({
+      next: (res: any) => {
+        this.searchResults = res.movie_compare
+      },
+      error(err) {
+        console.error(err)
+      },
+    })
   }
 
   clearComparison(): void {

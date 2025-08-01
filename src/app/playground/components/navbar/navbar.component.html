@@ -12,19 +12,20 @@
         <div class="tooltip">Story Writing</div>
       </a>
     </div>
-    <div class="nav-item">
-      <a routerLink="analysis" routerLinkActive="active" class="nav-link">
-        <mat-icon>analytics</mat-icon>
-        <div class="tooltip">Analysis</div>
-      </a>
-    </div>
     <div class="nav-item" *ngIf="selectedProject">
       <a routerLink="character" routerLinkActive="active" class="nav-link">
         <mat-icon>group</mat-icon>
         <div class="tooltip">Character Analysis</div>
       </a>
     </div>
-    <div class="nav-item" *ngIf="selectedProject">
+    <div class="nav-item">
+      <a routerLink="analysis" routerLinkActive="active" class="nav-link">
+        <mat-icon>analytics</mat-icon>
+        <div class="tooltip">Analysis</div>
+      </a>
+    </div>
+    
+    <!-- <div class="nav-item" *ngIf="selectedProject">
       <a routerLink="script-writing" routerLinkActive="active" class="nav-link">
         <mat-icon>script</mat-icon>
         <div class="tooltip">Script Writing</div>
@@ -35,7 +36,7 @@
         <mat-icon>graph_3</mat-icon>
         <div class="tooltip">Story Mapping</div>
       </a>
-    </div>
+    </div> -->
   </div>
   
   <div class="theme-controls">

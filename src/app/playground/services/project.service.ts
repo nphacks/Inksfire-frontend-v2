@@ -35,4 +35,16 @@ export class ProjectService {
   updateProject(data: any) {
     return this.http.post(`${environment.apiUrl}/project-setup/update-project`, data);   
   }
+
+  searchForMovies(data: any) {
+    return this.http.get(`${environment.apiUrl}/qloo/get-movie-info`, {
+      params: { movie_search_Str: data }
+    });   
+  }
+
+  compareMovies(data: any) {
+    return this.http.get(`${environment.apiUrl}/qloo/get-movie-compare-info`, {
+      params: { entity_1: data[0], entity_2: data[1] }
+    });   
+  }
 }
