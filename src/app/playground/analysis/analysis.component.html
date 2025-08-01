@@ -1,1 +1,172 @@
-<p>analysis works!</p>
+<div class="analysis-container">
+  <div class="analysis-header">
+    <h1>Story Analysis & Comparison</h1>
+    <p>Search and compare story elements for deeper insights</p>
+  </div>
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-input-group">
+      <input 
+        type="search" 
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="performSearch()"
+        placeholder="Search for stories, characters, themes, or elements..."
+        class="search-input" />
+      <button (click)="performSearch()" class="search-btn">
+        <mat-icon>search</mat-icon>
+        Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Search Results -->
+  <div class="search-results-section">
+    <h3>Search Results</h3>
+    <div class="results-container">
+      <div class="result-item" 
+           *ngFor="let result of searchResults; let i = index"
+           (click)="toggleResultSelection(result, i)"
+           [class.selected]="isResultSelected(result)"
+           [class.disabled]="!isResultSelected(result) && selectedResults.length >= 2">
+        <div class="result-header">
+          <h4>{{ result.title || 'Untitled' }}</h4>
+          <div class="result-type">{{ result.type || 'Unknown' }}</div>
+        </div>
+        <div class="result-preview">
+          <p>{{ result.description || 'No description available' }}</p>
+        </div>
+        <div class="selection-indicator" *ngIf="isResultSelected(result)">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+      </div>
+      
+      <div class="empty-results" *ngIf="searchResults.length === 0 && hasSearched">
+        <mat-icon>search_off</mat-icon>
+        <p>No results found for your search</p>
+      </div>
+      
+      <div class="no-search" *ngIf="!hasSearched">
+        <mat-icon>search</mat-icon>
+        <p>Enter a search term to find stories and elements</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Section -->
+  <div class="comparison-section" *ngIf="selectedResults.length > 0">
+    <h3>Comparison Analysis</h3>
+    
+    <div class="comparison-grid">
+      <!-- First Selected Result -->
+      <div class="comparison-card" *ngIf="selectedResults[0]">
+        <div class="card-header">
+          <h4>Selection 1</h4>
+          <button (click)="removeSelection(0)" class="remove-btn">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="card-content">
+          <div class="metadata-section">
+            <h5>{{ selectedResults[0].title || 'Untitled' }}</h5>
+            <div class="metadata-item">
+              <strong>Type:</strong>
+              <span>{{ selectedResults[0].type || 'Unknown' }}</span>
+            </div>
+            <div class="metadata-item">
+              <strong>Description:</strong>
+              <span>{{ selectedResults[0].description || 'No description' }}</span>
+            </div>
+            <!-- Additional metadata will be populated here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Second Selected Result -->
+      <div class="comparison-card" *ngIf="selectedResults[1]">
+        <div class="card-header">
+          <h4>Selection 2</h4>
+          <button (click)="removeSelection(1)" class="remove-btn">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="card-content">
+          <div class="metadata-section">
+            <h5>{{ selectedResults[1].title || 'Untitled' }}</h5>
+            <div class="metadata-item">
+              <strong>Type:</strong>
+              <span>{{ selectedResults[1].type || 'Unknown' }}</span>
+            </div>
+            <div class="metadata-item">
+              <strong>Description:</strong>
+              <span>{{ selectedResults[1].description || 'No description' }}</span>
+            </div>
+            <!-- Additional metadata will be populated here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison Results -->
+      <div class="comparison-card comparison-results" *ngIf="selectedResults.length === 2">
+        <div class="card-header">
+          <h4>Comparison Results</h4>
+          <mat-icon>compare_arrows</mat-icon>
+        </div>
+        <div class="card-content">
+          <div class="comparison-data" *ngIf="comparisonData; else noComparison">
+            <!-- Comparison data will be populated here -->
+            <div class="comparison-item">
+              <strong>Similarity Score:</strong>
+              <span>{{ comparisonData.similarity || 'N/A' }}</span>
+            </div>
+            <div class="comparison-item">
+              <strong>Key Differences:</strong>
+              <span>{{ comparisonData.differences || 'N/A' }}</span>
+            </div>
+          </div>
+          
+          <ng-template #noComparison>
+            <div class="no-comparison">
+              <mat-icon>analytics</mat-icon>
+              <p>Click "Compare" to analyze the selected items</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Empty Selection Placeholders -->
+      <div class="comparison-card empty-selection" *ngIf="!selectedResults[0]">
+        <div class="card-header">
+          <h4>Selection 1</h4>
+        </div>
+        <div class="card-content">
+          <div class="empty-state">
+            <mat-icon>add_circle_outline</mat-icon>
+            <p>Select a search result to compare</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="comparison-card empty-selection" *ngIf="!selectedResults[1]">
+        <div class="card-header">
+          <h4>Selection 2</h4>
+        </div>
+        <div class="card-content">
+          <div class="empty-state">
+            <mat-icon>add_circle_outline</mat-icon>
+            <p>Select a second result to compare</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compare Button -->
+    <div class="compare-action" *ngIf="selectedResults.length === 2">
+      <button (click)="compareResults()" class="compare-btn" [disabled]="isComparing">
+        <mat-icon>analytics</mat-icon>
+        <span *ngIf="!isComparing">Compare Selected Items</span>
+        <span *ngIf="isComparing">Comparing...</span>
+      </button>
+    </div>
+  </div>
+</div>
