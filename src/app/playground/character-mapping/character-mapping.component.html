@@ -186,6 +186,72 @@
           </button>
         </div>
       </div>
+      
+      <!-- Actor Search Results -->
+      <div class="actor-search-results" *ngIf="actorSearchResults && actorSearchResults.length > 0">
+        <div class="search-results-layout">
+          <!-- Left Column: Actor List (25%) -->
+          <div class="actors-list-column">
+            <h4>Search Results</h4>
+            <div class="actors-list">
+              <div 
+                *ngFor="let actor of actorSearchResults" 
+                class="actor-list-item"
+                [class.selected]="selectedSearchedActor?.entity_id === actor.entity_id"
+                (click)="selectSearchedActor(actor)">
+                <div class="actor-name">{{ actor.name }}</div>
+                <div class="actor-disambiguation" *ngIf="actor.disambiguation">{{ actor.disambiguation }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right Column: Actor Details (75%) -->
+          <div class="actor-details-column">
+            <div class="actor-details" *ngIf="selectedSearchedActor; else selectActorPrompt">
+              <div class="actor-header">
+                <h4>{{ selectedSearchedActor.name }}</h4>
+                <div class="actor-popularity">
+                  <mat-icon>star</mat-icon>
+                  <span>Popularity: {{ (selectedSearchedActor.popularity * 100).toFixed(1) }}%</span>
+                </div>
+              </div>
+              
+              <div class="actor-info-section" *ngIf="selectedSearchedActor.references && selectedSearchedActor.references.length > 0">
+                <h5>Things known for</h5>
+                <div class="references-list">
+                  <div *ngFor="let reference of selectedSearchedActor.references" class="reference-item">
+                    <span class="reference-name">{{ reference.name }}</span>
+                    <span class="reference-type">{{ getEntityTypeLabel(reference.type) }}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="actor-info-section" *ngIf="selectedSearchedActor.tags && selectedSearchedActor.tags.length > 0">
+                <h5>Tags</h5>
+                <div class="actor-tags">
+                  <span *ngFor="let tag of selectedSearchedActor.tags" class="actor-tag">
+                    {{ tag.name }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="actor-actions">
+                <button class="assign-actor-btn" (click)="assignActorToCharacter(selectedSearchedActor)">
+                  <mat-icon>person_add</mat-icon>
+                  Assign to {{ selectedCharacter?.name }}
+                </button>
+              </div>
+            </div>
+            
+            <ng-template #selectActorPrompt>
+              <div class="select-actor-prompt">
+                <mat-icon>person_search</mat-icon>
+                <p>Select an actor from the list to view details</p>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
