@@ -31,7 +31,6 @@ export class AnalysisComponent implements OnInit, OnDestroy {
     console.log('Search query:', this.searchQuery);
     this.hasSearched = true;
     
-    // TODO: Replace with actual service call
     this.projectService.searchForMovies(this.searchQuery).subscribe({
       next: (res: any) => {
         console.log(res.movie_information)
@@ -41,10 +40,6 @@ export class AnalysisComponent implements OnInit, OnDestroy {
         console.error(err)
       },
     })
-    
-    // Clear previous results and comparison
-    this.searchResults = [];
-    this.clearComparison();
   }
 
   toggleResultSelection(result: any, index: number): void {
