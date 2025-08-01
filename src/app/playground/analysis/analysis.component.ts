@@ -23,7 +23,7 @@ export class AnalysisComponent implements OnInit, OnDestroy {
     // Component initialization
   }
 
-  performSearch(): void {
+  performSearch = (): void => {
     if (!this.searchQuery.trim()) {
       return;
     }
@@ -103,6 +103,35 @@ export class AnalysisComponent implements OnInit, OnDestroy {
     this.comparisonData = null;
   }
 
+  getEntityType(types: string | string[]): string {
+    if (!types) return 'Unknown';
+    
+    const typeArray = Array.isArray(types) ? types : [types];
+    const firstType = typeArray[0];
+    
+    if (!firstType) return 'Unknown';
+    
+    // Extract the entity type from URN format (e.g., "urn:entity:movie" -> "Movie")
+    const parts = firstType.split(':');
+    if (parts.length >= 3) {
+      const entityType = parts[2];
+      // Capitalize first letter and handle special cases
+      switch (entityType) {
+        case 'movie':
+          return 'Movie';
+        case 'tv_show':
+          return 'TV Show';
+        case 'person':
+          return 'Person';
+        case 'book':
+          return 'Book';
+        default:
+          return entityType.charAt(0).toUpperCase() + entityType.slice(1);
+      }
+    }
+    
+    return 'Unknown';
+  }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
