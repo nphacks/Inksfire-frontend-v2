@@ -111,7 +111,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
             tap((response: any) => {
               this.projectDataService.setProject(response.project);
               this.projectData = response.project;
-              this.stories = this.projectData.stories;
+              this.stories = this.projectData.stories || [];
               if (this.stories && this.stories.length > 0) {
                 this.activeStory = this.stories[0];
               }
@@ -119,7 +119,7 @@ export class StoryWritingComponent implements OnInit, OnDestroy, AfterViewInit {
           );
         } else {
           this.projectData = res;
-          this.stories = this.projectData.stories || [];
+          this.stories = res.stories || [];
           if (this.stories && this.stories.length > 0 && !this.activeStory) {
             this.activeStory = this.stories[0];
           }
